@@ -1,0 +1,14 @@
+validate:
+  friend: { type: HASHREF }
+message:
+  header:
+    - !TT 
+      Subject: Hello [% friend.name %]
+    - X-Test: This is a test.
+  type: multipart/alternative
+  parts:
+    - type: text/plain
+      body: We don't support tests.
+    - !File/TT
+      type: text/html
+      body: html
