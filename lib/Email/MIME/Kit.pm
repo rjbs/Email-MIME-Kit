@@ -9,7 +9,7 @@ use base qw(
             Class::Accessor
           );
 
-use Params::Validate ();
+use Params::Validate qw(:types);
 use YAML::Syck ();
 use Scalar::Util qw(weaken);
 
@@ -137,6 +137,17 @@ sub load {
   my $self =  bless YAML::Syck::Load(
     _slurp("$dir/message.yml"),
   ) => $class;
+  Params::Validate::validate_with(
+    params => [ %{ $self } ],
+    spec   => {
+      message  => { type => HASHREF },
+      validate => {
+        type => HASHREF,
+        optional => 1,
+      },
+    }
+  );
+      
   $self->{dir} = $dir;
   return $self;
 }
