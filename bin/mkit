@@ -5,6 +5,7 @@ use warnings;
 
 use ICG::CLI;
 use ICG::Handy qw(smtpsend);
+use icg2;
 use YAML::Syck;
 use Email::MIME::Kit;
 
