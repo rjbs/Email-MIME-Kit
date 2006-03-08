@@ -1,9 +1,9 @@
-package Email::MIME::Kit::Plugin::Part::File;
+package Email::MIME::Kit::Part::File;
 
 use strict;
 use warnings;
 use File::Spec;
-use base qw(Email::MIME::Kit::Plugin::Part);
+use base qw(Email::MIME::Kit::Part);
 
 sub filename {
   my ($self, $stash) = @_;

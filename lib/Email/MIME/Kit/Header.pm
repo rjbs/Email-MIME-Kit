@@ -1,4 +1,4 @@
-package Email::MIME::Kit::Plugin::Header;
+package Email::MIME::Kit::Header;
 
 use strict;
 use warnings;

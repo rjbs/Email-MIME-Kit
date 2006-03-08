@@ -2,7 +2,7 @@ package Email::MIME::Kit;
 
 use warnings;
 use strict;
-use v5.006001;
+use 5.006001;
 
 use base qw(
             Class::Data::Inheritable
@@ -15,9 +15,18 @@ use Scalar::Util qw(weaken);
 
 use Email::MIME::Creator;
 
-use Module::Pluggable (require => 1);
 use Module::Pluggable (
-  sub_name    => "renderers",
+  sub_name    => "part_plugins",
+  search_path => [ "Email::MIME::Kit::Part" ],
+  require     => 1,
+);
+use Module::Pluggable (
+  sub_name    => "header_plugins",
+  search_path => [ "Email::MIME::Kit::Header" ],
+  require     => 1,
+);
+use Module::Pluggable (
+  sub_name    => "renderer_plugins",
   search_path => [ "Email::MIME::Kit::Renderer" ],
   require     => 1, 
 );
@@ -36,9 +45,11 @@ sub _slurp {
 
 __PACKAGE__->mk_classdata('kit_part_class');
 __PACKAGE__->mk_ro_accessors('dir');
-__PACKAGE__->kit_part_class(__PACKAGE__ . "::Plugin::Part");
-__PACKAGE__->plugins;
-__PACKAGE__->renderers;
+__PACKAGE__->kit_part_class(__PACKAGE__ . "::Part");
+
+__PACKAGE__->part_plugins;
+__PACKAGE__->header_plugins;
+__PACKAGE__->renderer_plugins;
 
 =head1 NAME
 
@@ -113,7 +124,6 @@ sub new {
   my ($class, $dir, $opt) = @_;
   my $self = $class->load($dir, $opt);
   $self->normalize;
-  $self->validate;
   return $self;
 }
 
@@ -149,9 +159,21 @@ sub normalize {
 
 =head2 C<< validate >>
 
+  $kit->validate($stash);
+
+Run the given C<< $stash >> through Params::Validate to make
+sure it contains everything the kit needs for assembly.
+
+Called automatically by C<< assemble >>.
+
 =cut
 
 sub validate {
+  my ($self, $stash) = @_;
+  Params::Validate::validate_with(
+    params => [ %{ $stash || {} } ],
+    spec   => $self->{validate},
+  );
 }
 
 =head2 C<< assemble >>
@@ -165,6 +187,7 @@ stash) and create an Email::MIME object from the parts.
 
 sub assemble {
   my ($self, $stash) = @_;
+  $self->validate($stash);
   return $self->{message}->assemble($stash);
 }
 

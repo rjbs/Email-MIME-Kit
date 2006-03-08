@@ -1,4 +1,4 @@
-package Email::MIME::Kit::Plugin::Part;
+package Email::MIME::Kit::Part;
 
 use strict;
 use warnings;
@@ -15,7 +15,7 @@ __PACKAGE__->mk_ro_accessors(
 );
 __PACKAGE__->renderer('Email::MIME::Kit::Renderer::Plain');
 
-my $PLUGIN_BASE = "Email::MIME::Kit::Plugin";
+my $PLUGIN_BASE = "Email::MIME::Kit";
 
 sub new {
   my ($class, $arg) = @_;
