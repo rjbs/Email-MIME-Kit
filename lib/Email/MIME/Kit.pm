@@ -2,17 +2,25 @@ package Email::MIME::Kit;
 
 use warnings;
 use strict;
-require 5.006001;
+use v5.006001;
 
-use base qw(Class::Data::Inheritable);
+use base qw(
+            Class::Data::Inheritable
+            Class::Accessor
+          );
 
 use Params::Validate ();
 use YAML::Syck ();
-use Scalar::Util ();
+use Scalar::Util qw(weaken);
 
 use Email::MIME::Creator;
 
 use Module::Pluggable (require => 1);
+use Module::Pluggable (
+  sub_name    => "renderers",
+  search_path => [ "Email::MIME::Kit::Renderer" ],
+  require     => 1, 
+);
 
 sub _slurp {
   my $file = shift;
@@ -27,8 +35,10 @@ sub _slurp {
 }
 
 __PACKAGE__->mk_classdata('kit_part_class');
+__PACKAGE__->mk_ro_accessors('dir');
 __PACKAGE__->kit_part_class(__PACKAGE__ . "::Plugin::Part");
 __PACKAGE__->plugins;
+__PACKAGE__->renderers;
 
 =head1 NAME
 
@@ -117,7 +127,7 @@ sub load {
   my $self =  bless YAML::Syck::Load(
     _slurp("$dir/message.yml"),
   ) => $class;
-  $self->{root} = $dir;
+  $self->{dir} = $dir;
   return $self;
 }
 
@@ -132,7 +142,8 @@ sub normalize {
     no strict 'refs';
     $self->{validate}->{$key}->{type} = &{"Params::Validate::$type"};
   }
-  $self->{message}->{root} = $self->{root};
+  $self->{message}->{kit} = $self;
+  weaken($self->{message}->{kit});
   $self->{message} = $self->kit_part_class->new($self->{message});
 }
 

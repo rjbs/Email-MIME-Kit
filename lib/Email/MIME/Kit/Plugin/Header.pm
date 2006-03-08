@@ -3,11 +3,17 @@ package Email::MIME::Kit::Plugin::Header;
 use strict;
 use warnings;
 
-use base qw(Class::Accessor);
+use base qw(
+            Class::Accessor
+            Class::Data::Inheritable
+          );
 
+__PACKAGE__->mk_classdata('renderer');
 __PACKAGE__->mk_ro_accessors(
   qw(name value)
 );
+
+__PACKAGE__->renderer('Email::MIME::Kit::Renderer::Plain');
 
 sub new {
   my ($class, $arg) = @_;
@@ -20,7 +26,7 @@ sub new {
 
 sub render {
   my ($self, $stash) = @_;
-  return $self->value;
+  return $self->renderer->render($self->value, $stash);
 }
 
 1;

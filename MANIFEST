@@ -16,9 +16,12 @@ lib/Email/MIME/Kit/Plugin/Header/TT.pm
 lib/Email/MIME/Kit/Plugin/Part.pm
 lib/Email/MIME/Kit/Plugin/Part/File.pm
 lib/Email/MIME/Kit/Plugin/Part/File/TT.pm
-lib/Email/MIME/Kit/Plugin/TT.pm
+lib/Email/MIME/Kit/Renderer.pm
+lib/Email/MIME/Kit/Renderer/TT.pm
+lib/Email/MIME/Kit/Renderer/Plain.pm
 Makefile.PL
 MANIFEST
+META.yml
 README
 t/00-load.t
 t/boilerplate.t

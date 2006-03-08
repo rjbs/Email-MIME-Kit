@@ -4,20 +4,26 @@ use strict;
 use warnings;
 
 use Scalar::Util ();
-use base qw(Class::Accessor);
+use base qw(
+            Class::Accessor
+            Class::Data::Inheritable
+          );
 
+__PACKAGE__->mk_classdata('renderer');
 __PACKAGE__->mk_ro_accessors(
-  qw(header parts body type root)
+  qw(header parts body type parent kit attributes)
 );
+__PACKAGE__->renderer('Email::MIME::Kit::Renderer::Plain');
 
 my $PLUGIN_BASE = "Email::MIME::Kit::Plugin";
 
 sub new {
   my ($class, $arg) = @_;
   for my $default (
-    [ header => [] ],
-    [ parts  => [] ],
-    [ body   => '' ],
+    [ header     => [] ],
+    [ parts      => [] ],
+    [ body       => '' ],
+    [ attributes => {} ],
   ) {
     $arg->{$default->[0]} ||= $default->[1];
   }
@@ -38,27 +44,30 @@ sub normalize {
     $header = "$PLUGIN_BASE\::$class"->new($header);
   }
   for my $part (@{ $self->parts }) {
-    $part->{root} = $self->root;
+    $part->{parent} = $self;
+    $part->{kit} = $self->kit;
+    Scalar::Util::weaken($part->{$_}) for qw(parent kit);
     $part = __PACKAGE__->new($part);
   }
 }
 
 sub render {
   my ($self, $stash) = @_;
-  return $self->body;
+  return $self->renderer->render($self->body, $stash);
 }
-  
 
 sub assemble {
   my ($self, $stash) = @_;
-  use Data::Dumper;
+
   my %arg = (
     attributes => {
       content_type => $self->type || "text/plain",
+      %{ $self->attributes },
     },
     header => [
       map { $_->name => $_->render($stash) } @{ $self->header }
     ],
+    # prefer parts over body, like Email::MIME::Creator
     @{ $self->parts } ?
       (parts => [ map { $_->assemble($stash) } @{$self->parts} ]) :
         (body => $self->render($stash))

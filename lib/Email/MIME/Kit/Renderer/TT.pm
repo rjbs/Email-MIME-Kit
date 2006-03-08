@@ -1,4 +1,4 @@
-package Email::MIME::Kit::Plugin::TT;
+package Email::MIME::Kit::Renderer::TT;
 
 use strict;
 use warnings;
@@ -10,13 +10,15 @@ sub tt {
   $TT ||= Template->new;
 }
 
-sub tt_process {
-  my ($self, $input, $stash, $output, %opt) = @_;
+sub render {
+  my ($self, $input, $stash, $args) = @_;
+  $stash ||= {};
+  my ($output, %opt) = @{ $args || [] };
   my $return;
   unless ($output) {
     $output = \$return;
   }
-  $self->tt->process($input, $stash, $output, %opt)
+  $self->tt->process(\$input, $stash, $output, %opt)
     or die $self->tt->error, "\n";
   return $return;
 }

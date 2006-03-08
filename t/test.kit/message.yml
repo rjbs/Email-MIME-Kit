@@ -5,10 +5,19 @@ message:
     - !TT 
       Subject: Hello [% friend.name %]
     - X-Test: This is a test.
-  type: multipart/alternative
+  type: multipart/mixed
   parts:
+    - type: multipart/alternative
+      attributes:
+        disposition: inline
+      parts:
+        - type: text/plain
+          body: We don't support tests.
+        - !File/TT
+          type: text/html
+          body: html
     - type: text/plain
-      body: We don't support tests.
-    - !File/TT
-      type: text/html
-      body: html
+      body: This is a part.
+      attributes:
+        filename: part.txt
+        disposition: attachment

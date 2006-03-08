@@ -12,9 +12,12 @@ build_requires 'Test::More'          => 0;
 requires 'Params::Validate'          => '0.74';
 requires 'YAML::Syck'                => '0.33';
 requires 'Module::Pluggable'         => '2.96';
+requires 'Template'                  => 0;
 requires 'Class::Accessor'           => 0;
+requires 'Class::Data::Inheritable'  => 0;
 requires 'Scalar::Util'              => 0;
 requires 'Email::MIME::Creator'      => 0;
+requires 'File::Spec'                => 0;
 
 auto_install;
 
