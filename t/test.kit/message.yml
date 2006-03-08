@@ -16,8 +16,9 @@ message:
         - !File/TT
           type: text/html
           body: html
-    - type: text/plain
-      body: This is a part.
+    - !TT
+      type: text/plain
+      body: This is a part for my friend [% friend.name %]
       attributes:
         filename: part.txt
         disposition: attachment

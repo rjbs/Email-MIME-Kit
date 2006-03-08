@@ -17,6 +17,26 @@ __PACKAGE__->renderer('Email::MIME::Kit::Renderer::Plain');
 
 my $PLUGIN_BASE = "Email::MIME::Kit";
 
+=head1 NAME
+
+Email::MIME::Kit::Part
+
+=head1 DESCRIPTION
+
+Each EMK::Part is a potential MIME entity.  It may have
+'parts' or a 'body'.  It may have a 'header' arrayref.  It
+becomes (via C<< assemble >>) an Email::MIME object.
+
+=head1 METHODS
+
+=head2 C<< new >>
+
+Called by C<< Kit->new >>.  This turns a hashref (from
+message.yml) into a real object, including reblessing into a
+real Part subclass if it was tagged in YAML (e.g. !File/TT).
+
+=cut
+
 sub new {
   my ($class, $arg) = @_;
   for my $default (
@@ -27,14 +47,25 @@ sub new {
   ) {
     $arg->{$default->[0]} ||= $default->[1];
   }
+
   my $subclass = Scalar::Util::blessed($arg);
-  #$subclass ||= "Multipart" if @{$arg->{parts}};
   $class .= "::$subclass" if $subclass;
-  #warn "blessing into $class\n";
-  my $self = $class->SUPER::new($arg);
+
+  # avoid $class->SUPER::new because it makes a copy and
+  # would undo the weakening of refs
+
+  my $self = bless $arg => $class;
   $self->normalize;
   return $self;
 }
+
+=head2 C<< normalize >>
+
+For all the headers and parts of this Part, turn hashrefs
+into real objects, similar to the process described in
+L</new>.
+
+=cut
 
 sub normalize {
   my ($self) = @_;
@@ -51,10 +82,32 @@ sub normalize {
   }
 }
 
+=head2 C<< render >>
+
+Use this Part's C<< renderer >> to render the Part's body.
+
+=cut
+
 sub render {
   my ($self, $stash) = @_;
   return $self->renderer->render($self->body, $stash);
 }
+
+=head2 C<< assemble >>
+
+  my $mime = $part->assemble($stash);
+
+Assemble this Part into an Email::MIME.  C<< type >> is
+passed as the 'content_type' attribute, along with anything
+else in the 'attributes' mapping.
+
+Likewise, all headers are rendered and passed in as the
+'header' parameter to C<< Email::MIME->create >>.
+
+If this Part has C<< parts >>, recursively calls C<<
+assemble >> on each of them, passing in the stash.
+
+=cut
 
 sub assemble {
   my ($self, $stash) = @_;

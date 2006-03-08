@@ -11,11 +11,12 @@ inc/Module/Install/Metadata.pm
 inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
 lib/Email/MIME/Kit.pm
-lib/Email/MIME/Kit/Plugin/Header.pm
-lib/Email/MIME/Kit/Plugin/Header/TT.pm
-lib/Email/MIME/Kit/Plugin/Part.pm
-lib/Email/MIME/Kit/Plugin/Part/File.pm
-lib/Email/MIME/Kit/Plugin/Part/File/TT.pm
+lib/Email/MIME/Kit/Header.pm
+lib/Email/MIME/Kit/Header/TT.pm
+lib/Email/MIME/Kit/Part.pm
+lib/Email/MIME/Kit/Part/TT.pm
+lib/Email/MIME/Kit/Part/File.pm
+lib/Email/MIME/Kit/Part/File/TT.pm
 lib/Email/MIME/Kit/Renderer.pm
 lib/Email/MIME/Kit/Renderer/TT.pm
 lib/Email/MIME/Kit/Renderer/Plain.pm
