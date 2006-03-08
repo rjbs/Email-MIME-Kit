@@ -19,6 +19,8 @@ requires 'Scalar::Util'              => 0;
 requires 'Email::MIME::Creator'      => 0;
 requires 'File::Spec'                => 0;
 
+install_script 'bin/mkit';
+
 auto_install;
 
 WriteAll;

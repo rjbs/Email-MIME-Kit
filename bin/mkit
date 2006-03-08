@@ -1,0 +1,64 @@
+#!perl
+
+use strict;
+use warnings;
+
+use ICG::CLI;
+use ICG::Handy qw(smtpsend);
+use YAML::Syck;
+use Email::MIME::Kit;
+
+my ($opt, $usage) = describe_options(
+  "%c %o /path/to/mime.kit/",
+  [ mode => [
+    [ 'print'  => 'print to screen (default)' ],
+    [ 'to=s' => 'send to given address' ],
+  ], { default => 'print' } ],
+  [ 'define|d=s%'      => 'define variables for kit assembly' ],
+  [ 'define-yaml|D=s%' => 'define variables using YAML' ],
+  [],
+  [ 'options for sending:' ],
+  [ 'from=s' => 'envelope sender' ],
+);
+
+my $dir = shift(@ARGV) || X->toss("directory to mime.kit is required");
+
+my $kit = Email::MIME::Kit->new($dir);
+
+for my $key (keys %{$opt->{define_yaml}}) {
+  $opt->{define}->{$key} = Load($opt->{define_yaml}->{$key});
+}
+
+# XXX special cases
+for my $special (
+  [ account => sub { icg2->Account(@_) } ],
+  [ client  => sub { icg2->Client(@_) } ],
+  [ mypobox => sub { icg2->mypobox(@_) } ],
+) {
+  my ($arg, $code) = @$special;
+  next unless $opt->{define}->{$arg};
+  $opt->{define}->{$arg} = $code->($opt->{define}->{$arg});
+}
+
+my $mime = $kit->assemble($opt->{define});
+
+main->can($opt->{mode})->($mime, $opt);
+
+sub print {
+  my ($mime, $opt) = @_;
+  say $mime->as_string;
+}
+
+sub to {
+  my ($mime, $opt) = @_;
+  require Sys::Hostname;
+  my $from = $opt->{from} ||
+    join('@', scalar(getpwuid($<)), Sys::Hostname::hostname());
+  smtpsend(
+    $mime->as_string,
+    from => $from,
+    to   => [ split /,/, $opt->{to} ],
+    host => 'localhost',
+    port => 25,
+  );
+}
