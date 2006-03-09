@@ -7,7 +7,10 @@ use Template;
 my $TT;
 
 sub _tt {
-  $TT ||= Template->new;
+  $TT ||= Template->new(
+    ABSOLUTE => 1,
+    RELATIVE => 1,
+  );
 }
 
 =head1 NAME
