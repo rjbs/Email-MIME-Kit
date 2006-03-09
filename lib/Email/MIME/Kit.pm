@@ -44,7 +44,9 @@ sub _slurp {
 }
 
 __PACKAGE__->mk_classdata('kit_part_class');
-__PACKAGE__->mk_ro_accessors('dir');
+__PACKAGE__->mk_ro_accessors(
+  qw(dir validate),
+);
 __PACKAGE__->kit_part_class(__PACKAGE__ . "::Part");
 
 __PACKAGE__->part_plugins;
@@ -142,8 +144,8 @@ sub load {
     spec   => {
       message  => { type => HASHREF },
       validate => {
-        type => HASHREF,
-        optional => 1,
+        type    => HASHREF,
+        default => {},
       },
     }
   );
@@ -168,9 +170,9 @@ sub normalize {
   $self->{message} = $self->kit_part_class->new($self->{message});
 }
 
-=head2 C<< validate >>
+=head2 C<< validate_input >>
 
-  $kit->validate($stash);
+  $kit->validate_input($stash);
 
 Run the given C<< $stash >> through Params::Validate to make
 sure it contains everything the kit needs for assembly.
@@ -179,11 +181,11 @@ Called automatically by C<< assemble >>.
 
 =cut
 
-sub validate {
+sub validate_input {
   my ($self, $stash) = @_;
   Params::Validate::validate_with(
     params => [ %{ $stash || {} } ],
-    spec   => $self->{validate},
+    spec   => $self->validate,
   );
 }
 
@@ -198,7 +200,7 @@ stash) and create an Email::MIME object from the parts.
 
 sub assemble {
   my ($self, $stash) = @_;
-  $self->validate($stash);
+  $self->validate_input($stash);
   return $self->{message}->assemble($stash);
 }
 

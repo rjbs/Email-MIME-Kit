@@ -15,8 +15,10 @@ my ($opt, $usage) = describe_options(
     [ 'print'  => 'print to screen (default)' ],
     [ 'to=s' => 'send to given address' ],
   ], { default => 'print' } ],
+  [],
   [ 'define|d=s%'      => 'define variables for kit assembly' ],
   [ 'define-yaml|D=s%' => 'define variables using YAML' ],
+  [ 'no-prompt|N'      => "don't prompt for input for undefined variables" ],
   [],
   [ 'options for sending:' ],
   [ 'from=s' => 'envelope sender' ],
@@ -28,6 +30,20 @@ my $kit = Email::MIME::Kit->new($dir);
 
 for my $key (keys %{$opt->{define_yaml}}) {
   $opt->{define}->{$key} = Load($opt->{define_yaml}->{$key});
+}
+
+for my $key (keys %{ $kit->validate }) {
+  next if defined $opt->{define}->{$key};
+  $opt->{define}->{$key} = Load(prompt_str(
+    "value for '$key'",
+    { valid => sub {
+        length(shift) or 
+          ref($kit->validate->{$key}) ?
+            $kit->validate->{$key}->{optional} :
+              not $kit->validate->{$key};
+      },
+    },
+  ));
 }
 
 # XXX special cases
