@@ -7,7 +7,9 @@ use ICG::CLI;
 use ICG::Handy qw(smtpsend);
 use icg2;
 use YAML::Syck;
+use Email::Address;
 use Email::MIME::Kit;
+use Sys::Hostname::Long;
 
 my ($opt, $usage) = describe_options(
   "%c %o /path/to/mime.kit/",
@@ -68,19 +70,20 @@ sub print {
 
 sub to {
   my ($mime, $opt) = @_;
-  my $hdr_from = $mime->header('From');
-  if ($hdr_from and not $opt->{from}) {
-    require Email::Address;
-    my ($addr) = Email::Address->parse($hdr_from)
-      or X::BadValue->toss("can't parse From: header: $hdr_from");
-    $opt->{from} = prompt_str(
+  my $hdr_from = eval { 
+    (Email::Address->parse($mime->header('From')))[0]->address
+  };
+  my $user_host = join('@', scalar(getpwuid($<)), hostname_long);
+
+  my $from = $opt->{from} || $hdr_from || $user_host;
+
+  unless ($opt->{no_prompt}) {
+    $from = prompt_str(
       "envelope sender",
-      { default => $addr->address },
+      { default => $from },
     );
   }
-  require Sys::Hostname::Long;
-  my $from = $opt->{from} ||
-    join('@', scalar(getpwuid($<)), Sys::Hostname::hostname_long());
+
   smtpsend(
     $mime->as_string,
     from => $from,
