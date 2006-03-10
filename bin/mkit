@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use ICG::CLI;
-use ICG::Handy qw(smtpsend);
+use ICG::Handy qw(are_emails smtpsend);
 use icg2;
 use YAML::Syck;
 use Email::Address;
@@ -66,6 +66,19 @@ main->can($opt->{mode})->($mime, $opt);
 sub print {
   my ($mime, $opt) = @_;
   say $mime->as_string;
+  return if $opt->{no_prompt} || $opt->{quiet};
+  if (prompt_yn("send this message?", { default => "y" })) {
+    my $default = 'someone@somewhere.com';
+    $opt->{to} = prompt_str(
+      "envelope recipients, separated by ','",
+      {
+        default => $default,
+        no_valid_default => 1,
+        valid   => sub { $_[0] ne $default && are_emails($_[0]) },
+      },
+    );
+    to($mime, $opt);
+  }
 }
 
 sub to {
@@ -87,7 +100,7 @@ sub to {
   smtpsend(
     $mime->as_string,
     from => $from,
-    to   => [ split /,/, $opt->{to} ],
+    to   => [ split /\s*,\s*/, $opt->{to} ],
     host => 'localhost',
     port => 25,
   );
