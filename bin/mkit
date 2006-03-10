@@ -68,9 +68,19 @@ sub print {
 
 sub to {
   my ($mime, $opt) = @_;
-  require Sys::Hostname;
+  my $hdr_from = $mime->header('From');
+  if ($hdr_from and not $opt->{from}) {
+    require Email::Address;
+    my ($addr) = Email::Address->parse($hdr_from)
+      or X::BadValue->toss("can't parse From: header: $hdr_from");
+    $opt->{from} = prompt_str(
+      "envelope sender",
+      { default => $addr->address },
+    );
+  }
+  require Sys::Hostname::Long;
   my $from = $opt->{from} ||
-    join('@', scalar(getpwuid($<)), Sys::Hostname::hostname());
+    join('@', scalar(getpwuid($<)), Sys::Hostname::hostname_long());
   smtpsend(
     $mime->as_string,
     from => $from,

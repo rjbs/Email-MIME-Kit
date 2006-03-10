@@ -4,6 +4,7 @@ message:
   header:
     - !TT 
       Subject: Hello [% friend.name %]
+    - From: Test Sender <test@test.com>
     - X-Test: This is a test.
   type: multipart/mixed
   parts:
