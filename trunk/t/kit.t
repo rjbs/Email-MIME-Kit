@@ -3,10 +3,14 @@
 use strict;
 use warnings;
 
-use Test::More 'no_plan';
+use Test::More tests => 10;
 use Email::MIME::Kit;
 
 my $kit = Email::MIME::Kit->new("./t/test.kit");
+isa_ok($kit, "Email::MIME::Kit");
+
+Email::MIME::Kit->kit_load_path("./t");
+$kit = Email::MIME::Kit->new('test.kit');
 isa_ok($kit, "Email::MIME::Kit");
 
 eval {

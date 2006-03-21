@@ -12,6 +12,7 @@ use base qw(
 use Params::Validate qw(:types);
 use YAML::Syck ();
 use Scalar::Util qw(weaken);
+use File::Spec;
 
 use Email::MIME::Creator;
 
@@ -44,6 +45,7 @@ sub _slurp {
 }
 
 __PACKAGE__->mk_classdata('kit_part_class');
+__PACKAGE__->mk_classdata('kit_load_path');
 __PACKAGE__->mk_ro_accessors(
   qw(dir validate),
 );
@@ -59,11 +61,11 @@ Email::MIME::Kit - build MIME messages using pre-fab parts
 
 =head1 VERSION
 
-Version 0.01
+Version 0.01_01
 
 =cut
 
-our $VERSION = '0.01';
+our $VERSION = '0.01_01';
 
 =head1 SYNOPSIS
 
@@ -135,6 +137,11 @@ sub new {
 
 sub load {
   my ($class, $dir, $opt) = @_;
+
+  if ($class->kit_load_path) {
+    $dir = File::Spec->catdir($class->kit_load_path, $dir);
+  }
+
   -e "$dir/message.yml" or die "no $dir/message.yml";
   my $self =  bless YAML::Syck::Load(
     _slurp("$dir/message.yml"),
