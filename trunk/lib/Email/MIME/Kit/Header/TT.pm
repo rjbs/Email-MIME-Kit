@@ -5,9 +5,7 @@ use warnings;
 
 use base qw(Email::MIME::Kit::Header);
 
-use Email::MIME::Kit::Renderer::TT;
-
-__PACKAGE__->renderer('Email::MIME::Kit::Renderer::TT');
+__PACKAGE__->renderer_class('Email::MIME::Kit::Renderer::TT');
 
 =head1 NAME
 

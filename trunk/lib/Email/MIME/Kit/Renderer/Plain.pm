@@ -2,6 +2,7 @@ package Email::MIME::Kit::Renderer::Plain;
 
 use strict;
 use warnings;
+use base qw(Email::MIME::Kit::Renderer);
 
 =head1 NAME
 

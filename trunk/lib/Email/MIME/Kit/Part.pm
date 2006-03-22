@@ -4,16 +4,12 @@ use strict;
 use warnings;
 
 use Scalar::Util ();
-use base qw(
-            Class::Accessor
-            Class::Data::Inheritable
-          );
 
-__PACKAGE__->mk_classdata('renderer');
+use base qw(Email::MIME::Kit::Component::Data);
+
 __PACKAGE__->mk_ro_accessors(
-  qw(header parts body type parent kit attributes)
+  qw(header parts body type parent attributes)
 );
-__PACKAGE__->renderer('Email::MIME::Kit::Renderer::Plain');
 
 my $PLUGIN_BASE = "Email::MIME::Kit";
 
@@ -29,7 +25,7 @@ becomes (via C<< assemble >>) an Email::MIME object.
 
 =head1 METHODS
 
-=head2 C<< new >>
+=head2 new
 
 Called by C<< Kit->new >>.  This turns a hashref (from
 message.yml) into a real object, including reblessing into a
@@ -48,18 +44,13 @@ sub new {
     $arg->{$default->[0]} ||= $default->[1];
   }
 
-  my $subclass = Scalar::Util::blessed($arg);
-  $class .= "::$subclass" if $subclass;
-
-  # avoid $class->SUPER::new because it makes a copy and
-  # would undo the weakening of refs
-
-  my $self = bless $arg => $class;
+  my $self = $class->SUPER::new($arg);
+  Scalar::Util::weaken($self->{parent}) if $self->parent;
   $self->normalize;
   return $self;
 }
 
-=head2 C<< normalize >>
+=head2 normalize
 
 For all the headers and parts of this Part, turn hashrefs
 into real objects, similar to the process described in
@@ -70,21 +61,23 @@ L</new>.
 sub normalize {
   my ($self) = @_;
   for my $header (@{ $self->header }) {
-    my $class = Scalar::Util::blessed($header);
-    $class = "Header" . ($class ? "::$class" : "");
-    $header = "$PLUGIN_BASE\::$class"->new($header);
+    $header = $self->kit->header_class->instance(
+      $self->kit->header_class->reform($header, { kit => $self->kit }),
+    );
   }
   for my $part (@{ $self->parts }) {
     $part->{parent} = $self;
     $part->{kit} = $self->kit;
-    Scalar::Util::weaken($part->{$_}) for qw(parent kit);
-    $part = __PACKAGE__->new($part);
+    $part = $self->kit->part_class->instance($part);
   }
 }
 
-=head2 C<< render >>
+=head2 render
 
 Use this Part's C<< renderer >> to render the Part's body.
+
+C<< assemble >> calls this as necessary.  You should not
+need to call it explicitly.
 
 =cut
 
@@ -93,7 +86,7 @@ sub render {
   return $self->renderer->render($self->body, $stash);
 }
 
-=head2 C<< assemble >>
+=head2 assemble
 
   my $mime = $part->assemble($stash);
 

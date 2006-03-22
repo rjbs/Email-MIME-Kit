@@ -6,7 +6,7 @@ use 5.006001;
 
 use base qw(
             Class::Data::Inheritable
-            Class::Accessor
+            Class::Accessor::Fast
           );
 
 use Params::Validate qw(:types);
@@ -44,16 +44,22 @@ sub _slurp {
   return <$fh>;
 }
 
-__PACKAGE__->mk_classdata('kit_part_class');
+__PACKAGE__->mk_classdata('part_class');
+__PACKAGE__->mk_classdata('header_class');
+
 __PACKAGE__->mk_classdata('kit_load_path');
 __PACKAGE__->mk_ro_accessors(
   qw(dir validate),
 );
-__PACKAGE__->kit_part_class(__PACKAGE__ . "::Part");
 
-__PACKAGE__->part_plugins;
-__PACKAGE__->header_plugins;
-__PACKAGE__->renderer_plugins;
+__PACKAGE__->part_class(__PACKAGE__ . "::Part");
+__PACKAGE__->header_class(__PACKAGE__ . "::Header");
+
+BEGIN {
+  __PACKAGE__->part_plugins;
+  __PACKAGE__->header_plugins;
+  __PACKAGE__->renderer_plugins;
+}
 
 =head1 NAME
 
@@ -61,11 +67,11 @@ Email::MIME::Kit - build MIME messages using pre-fab parts
 
 =head1 VERSION
 
-Version 0.01_01
+Version 0.01_02
 
 =cut
 
-our $VERSION = '0.01_01';
+our $VERSION = '0.01_02';
 
 =head1 SYNOPSIS
 
@@ -173,8 +179,7 @@ sub normalize {
     $self->{validate}->{$key}->{type} = &{"Params::Validate::$type"};
   }
   $self->{message}->{kit} = $self;
-  weaken($self->{message}->{kit});
-  $self->{message} = $self->kit_part_class->new($self->{message});
+  $self->{message} = $self->part_class->instance($self->{message});
 }
 
 =head2 C<< validate_input >>

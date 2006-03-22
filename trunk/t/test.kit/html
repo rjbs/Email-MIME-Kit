@@ -1,5 +1,5 @@
 <html>
 <body>
-Hello, [% friend.name %]!
+Hello, [% PROCESS friendname -%]
 </body>
 </html>

@@ -1,5 +1,9 @@
 package Email::MIME::Kit::Renderer;
 
+use strict;
+use warnings;
+use base qw(Email::MIME::Kit::Component);
+
 =head1 NAME
 
 Email::MIME::Kit::Renderer
@@ -26,6 +30,14 @@ B<Plain> returns values unchanged (default)
 B<TT> treats input as a TT template string
 
 =back
+
+=head1 SEE ALSO
+
+L<Email::MIME::Kit::Component>
+
+L<Email::MIME::Kit::Renderer::Plain>
+
+L<Email::MIME::Kit::Renderer::TT>
 
 =cut
 
