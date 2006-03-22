@@ -18,6 +18,7 @@ requires 'Class::Data::Inheritable'  => 0;
 requires 'Scalar::Util'              => 0;
 requires 'Email::MIME::Creator'      => 0;
 requires 'File::Spec'                => 0;
+requires 'Object::Array'             => 0;
 
 install_script 'bin/mkit';
 
