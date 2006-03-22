@@ -49,7 +49,7 @@ __PACKAGE__->mk_classdata('header_class');
 
 __PACKAGE__->mk_classdata('kit_load_path');
 __PACKAGE__->mk_ro_accessors(
-  qw(dir validate),
+  qw(dir validate renderers),
 );
 
 __PACKAGE__->part_class(__PACKAGE__ . "::Part");
@@ -109,19 +109,19 @@ This mapping (hashref) is used as a Params::Validate spec for all calls to C<< a
     header:  ...
     content: ...
 
-=head2 C<< header >>
+=head2 header
 
-=head2 C<< content >>
+=head2 content
 
-=head2 C<< parts >>
+=head2 parts
 
-=head2 C<< body >>
+=head2 body
 
 =head2 tags
 
 =head1 METHODS
 
-=head2 C<< new >>
+=head2 new
 
   my $kit = Email::MIME::Kit->new($dir, \%opt);
 
@@ -137,7 +137,7 @@ sub new {
   return $self;
 }
 
-=head2 C<< load >>
+=head2 load
 
 =cut
 
@@ -162,12 +162,13 @@ sub load {
       },
     }
   );
-      
+
+  $self->{renderers} = {};
   $self->{dir} = $dir;
   return $self;
 }
 
-=head2 C<< normalize >>
+=head2 normalize
 
 =cut
 
@@ -182,7 +183,7 @@ sub normalize {
   $self->{message} = $self->part_class->instance($self->{message});
 }
 
-=head2 C<< validate_input >>
+=head2 validate_input
 
   $kit->validate_input($stash);
 
@@ -201,7 +202,7 @@ sub validate_input {
   );
 }
 
-=head2 C<< assemble >>
+=head2 assemble
 
   my $message = $kit->assemble(\%arg);
 
@@ -214,6 +215,22 @@ sub assemble {
   my ($self, $stash) = @_;
   $self->validate_input($stash);
   return $self->{message}->assemble($stash);
+}
+
+=head2 renderer
+
+  my $renderer = $kit->renderer('TT');
+
+Return the kit's renderer object for the given subclass.
+
+=cut
+
+sub renderer {
+  my ($self, $subclass) = @_;
+  my $r_class = "Email::MIME::Kit::Renderer::$subclass";
+  return $self->renderers->{$subclass} ||= $r_class->new({
+    kit => $self,
+  });
 }
 
 =head1 AUTHOR

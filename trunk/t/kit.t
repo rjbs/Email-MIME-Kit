@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 10;
+use Test::More tests => 11;
 use Email::MIME::Kit;
 
 my $kit = Email::MIME::Kit->new("./t/test.kit");
@@ -22,6 +22,13 @@ eval {
   $kit->assemble({ friend => { name => "foo" }, enemy => "bar" });
 };
 like($@, qr/not listed.+: enemy/, "assemble error: unwanted param");
+
+eval {
+  $kit->assemble({ friend => { name => 'foo' }});
+};
+like($@, qr/friendname: not found/, "can't find file");
+
+$kit->renderer('TT')->include_path->push('./t/test.kit/extra');
 
 my $mime = eval {
   $kit->assemble({ friend => { name => "foo" } });

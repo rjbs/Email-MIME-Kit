@@ -8,8 +8,6 @@ use base qw(Email::MIME::Kit::Component
 
 use Scalar::Util ();
 
-__PACKAGE__->mk_accessors('_renderer');
-
 =head1 NAME
 
 Email::MIME::Kit::Component::Data
@@ -49,24 +47,20 @@ Instantiate (if needed) a renderer object and return it.
 
 sub renderer {
   my $self = shift;
-  $self->_renderer || $self->_renderer(
-    $self->renderer_class->new({
-      kit => $self->kit
-    }),
-  );
+  return $self->kit->renderer($self->renderer_name);
 }
 
 =head1 CLASS DATA
 
-=head2 renderer_class
+=head2 renderer_name
 
 Which class to use for C<< renderer >>.
 
-Defaults to 'Email::MIME::Kit::Renderer::Plain'.
+Defaults to 'Plain'.
 
 =cut
 
-__PACKAGE__->mk_classdata('renderer_class');
-__PACKAGE__->renderer_class('Email::MIME::Kit::Renderer::Plain');
+__PACKAGE__->mk_classdata('renderer_name');
+__PACKAGE__->renderer_name('Plain');
 
 1;
