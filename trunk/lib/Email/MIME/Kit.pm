@@ -163,6 +163,7 @@ sub load {
     }
   );
 
+  $self->{stash}     = $opt->{stash} || {};
   $self->{renderers} = {};
   $self->{dir} = $dir;
   return $self;
@@ -175,6 +176,7 @@ sub load {
 sub normalize {
   my $self = shift;
   for my $key (keys %{$self->{validate}}) {
+    next unless ref $self->{validate}->{$key} eq 'HASH';
     my $type = $self->{validate}->{$key}->{type} || next;
     no strict 'refs';
     $self->{validate}->{$key}->{type} = &{"Params::Validate::$type"};
@@ -213,6 +215,10 @@ stash) and create an Email::MIME object from the parts.
 
 sub assemble {
   my ($self, $stash) = @_;
+  $stash ||= {};
+  if ($self->{stash} && %{$self->{stash}}) {
+    %$stash = (%{$self->{stash}}, %$stash);
+  }
   $self->validate_input($stash);
   return $self->{message}->assemble($stash);
 }
