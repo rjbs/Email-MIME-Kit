@@ -53,6 +53,11 @@ for my $special (
   [ account => sub { icg2->Account(@_) } ],
   [ client  => sub { icg2->Client(@_) } ],
   [ mypobox => sub { icg2->mypobox(@_) } ],
+  [ self    => sub {
+      my ($type, $id) = split /\s+/, shift;
+      $type = ucfirst($type);
+      icg2->$type($id);
+    } ],
 ) {
   my ($arg, $code) = @$special;
   next unless $opt->{define}->{$arg};
