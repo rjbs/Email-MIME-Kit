@@ -35,3 +35,4 @@ t/pod.t
 t/kit.t
 t/test.kit/html
 t/test.kit/message.yml
+t/test.kit/extra/friendname
