@@ -27,6 +27,7 @@ Makefile.PL
 MANIFEST
 META.yml
 README
+bin/mkit
 t/00-load.t
 t/boilerplate.t
 t/pod-coverage.t
