@@ -1,11 +1,12 @@
 Revision history for Email-MIME-Kit
 
-0.01_02 Wed Mar 22 13:01:11 EST 2006
+2.000     2009-01-16
+          begin total rewrite
 
-        Refactor into ::Component and ::Component::Data
-        Make it possible to change INCLUDE_PATH for Renderer::TT.
+0.010_02  2006-03-22
+          Refactor into ::Component and ::Component::Data
+          Make it possible to change INCLUDE_PATH for Renderer::TT.
 
-0.01    Tue Mar  7 17:07:18 EST 2006
-
-        First version, released on an unsuspecting world.
+0.010     2006-03-06
+          First version, released on an unsuspecting world.
 
