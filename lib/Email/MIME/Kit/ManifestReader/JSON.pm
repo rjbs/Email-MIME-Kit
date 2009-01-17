@@ -2,6 +2,7 @@ package Email::MIME::Kit::ManifestReader::JSON;
 use Moose;
 
 with 'Email::MIME::Kit::Role::ManifestReader';
+with 'Email::MIME::Kit::Role::ManifestDesugarer';
 
 use JSON;
 

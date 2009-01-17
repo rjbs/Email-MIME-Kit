@@ -32,7 +32,7 @@
     {
       "type": "application/pdf",
       "header": [
-        "Content-Disposition": [ "attachment", { "filename": "report.pdf" } ]
+        { "Content-Disposition": [ "attachment", {"filename": "report.pdf"} ] }
       ],
       "path": "bogus-report.pdf"
     }
