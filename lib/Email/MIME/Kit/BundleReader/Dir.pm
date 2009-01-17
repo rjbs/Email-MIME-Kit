@@ -10,14 +10,9 @@ sub BUILDARGS {
   my ($self, @args) = @_;
   return $self->SUPER::BUILDARGS(@args)
     unless (@args == 1 and ! ref $args[0])
-        or (@args == 1 and ! ref $args[0] and ref $args[1] eq 'HASH');
+        or (@args == 2 and ! ref $args[0] and ref $args[1] eq 'HASH');
 
   return { %{ $args[1] }, dir => $args[0] };
-}
-
-sub read_bundle {
-  my ($class, $dir) = @_;
-  $class->new({ dir => $dir });
 }
 
 # cache sometimes

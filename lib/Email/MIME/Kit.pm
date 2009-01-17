@@ -20,6 +20,7 @@ has manifest_reader => (
     eval "require $class; 1" or die $@;
     $class->new({ kit => $_[0] });
   },
+  handles => [ qw(read_manifest) ],
 );
 
 sub bundle_reader_class { 'Email::MIME::Kit::BundleReader::Dir' }
@@ -29,10 +30,12 @@ has bundle_reader => (
   does => 'Email::MIME::Kit::Role::BundleReader',
   required => 1,
   default  => sub {
-    my $class = $_[0]->bundle_reader_class;
+    my ($self) = @_;
+    my $class = $self->bundle_reader_class;
     eval "require $class; 1" or die $@;
-    $class->new($self->source, { kit => $_[0] });
+    $class->new($self->source, { kit => $self });
   },
+  handles => [ qw(get_bundle_entry) ],
 );
 
 1;
