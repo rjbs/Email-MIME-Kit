@@ -7,5 +7,8 @@ use Email::MIME::Kit;
 
 my $kit = Email::MIME::Kit->new({ source => 't/test.mkit' });
 
-my $manifest = $kit->read_manifest;
+my $manifest = $kit->manifest;
 ok($manifest, 'got a manifest');
+
+use Data::Dumper;
+diag Dumper($manifest)

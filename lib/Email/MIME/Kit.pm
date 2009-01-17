@@ -1,6 +1,8 @@
 package Email::MIME::Kit;
 use Moose;
 
+use Data::GUID ();
+
 =head1 NAME
 
 Email::MIME::Kit - build messages from templates
@@ -23,6 +25,8 @@ has manifest_reader => (
   handles => [ qw(read_manifest) ],
 );
 
+has manifest => (reader => 'manifest', writer => '_set_manifest');
+
 sub bundle_reader_class { 'Email::MIME::Kit::BundleReader::Dir' }
 
 has bundle_reader => (
@@ -37,5 +41,42 @@ has bundle_reader => (
   },
   handles => [ qw(get_bundle_entry) ],
 );
+
+has _cid_registry => (
+  is       => 'ro',
+  init_arg => undef,
+  default  => sub { { } },
+);
+
+sub BUILD {
+  my ($self) = @_;
+
+  my $manifest = $self->read_manifest;
+  $self->_set_manifest($manifest);
+
+  $self->_setup_content_ids;
+}
+
+sub _setup_content_ids {
+  my ($self) = @_;
+
+  for my $att (@{ $self->manifest->{attachments} || [] }) {
+    next unless $att->{path};
+
+    for my $header (@{ $att->{header} }) {
+      my ($header) = grep { /^[^:]/ } keys %$header;
+      Carp::croak("attachments must not supply content-id")
+        if lc $header eq 'content-id';
+    }
+
+    my $guid = Data::GUID->new->as_string;
+    push @{ $att->{header} }, {
+      'Content-Id' => $guid,
+      ':renderer'  => undef,
+    };
+
+    $self->_cid_registry->{ $att->{path} } = $guid;
+  }
+}
 
 1;
