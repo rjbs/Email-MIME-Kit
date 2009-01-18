@@ -1,6 +1,6 @@
-package Email::MIME::Kit::BundleReader::Dir;
+package Email::MIME::Kit::KitReader::Dir;
 use Moose;
-with 'Email::MIME::Kit::Role::BundleReader';
+with 'Email::MIME::Kit::Role::KitReader';
 
 use File::Spec;
 
@@ -16,7 +16,7 @@ sub BUILDARGS {
 }
 
 # cache sometimes
-sub get_bundle_entry {
+sub get_kit_entry {
   my ($self, $path) = @_;
   
   my $fullpath = File::Spec->catfile($self->dir, $path);

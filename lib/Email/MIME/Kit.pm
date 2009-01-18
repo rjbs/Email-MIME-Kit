@@ -27,19 +27,19 @@ has manifest_reader => (
 
 has manifest => (reader => 'manifest', writer => '_set_manifest');
 
-sub bundle_reader_class { 'Email::MIME::Kit::BundleReader::Dir' }
+sub kit_reader_class { 'Email::MIME::Kit::KitReader::Dir' }
 
-has bundle_reader => (
+has kit_reader => (
   is   => 'ro',
-  does => 'Email::MIME::Kit::Role::BundleReader',
+  does => 'Email::MIME::Kit::Role::KitReader',
   required => 1,
   default  => sub {
     my ($self) = @_;
-    my $class = $self->bundle_reader_class;
+    my $class = $self->kit_reader_class;
     eval "require $class; 1" or die $@;
     $class->new($self->source, { kit => $self });
   },
-  handles => [ qw(get_bundle_entry) ],
+  handles => [ qw(get_kit_entry) ],
 );
 
 has _cid_registry => (

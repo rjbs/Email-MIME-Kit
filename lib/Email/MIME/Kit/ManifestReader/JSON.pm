@@ -9,7 +9,7 @@ use JSON;
 sub read_manifest {
   my ($self) = @_;
 
-  my $json_ref = $self->kit->bundle_reader->get_bundle_entry('manifest.json');
+  my $json_ref = $self->kit->kit_reader->get_kit_entry('manifest.json');
 
   my $content = JSON->new->decode($$json_ref);
 }

@@ -1,7 +1,7 @@
-package Email::MIME::Kit::Role::BundleReader;
+package Email::MIME::Kit::Role::KitReader;
 use Moose::Role;
 
-requires 'get_bundle_entry';
+requires 'get_kit_entry';
 
 has kit => (
   is  => 'ro',
