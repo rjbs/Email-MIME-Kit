@@ -45,56 +45,34 @@ has kit_reader => (
   handles => [ qw(get_kit_entry) ],
 );
 
-has _cid_registry => (
-  is       => 'ro',
-  init_arg => undef,
-  default  => sub { { } },
-);
-
 sub BUILD {
   my ($self) = @_;
 
   my $manifest = $self->read_manifest;
   $self->_set_manifest($manifest);
 
-  $self->_setup_content_ids;
-
-  $self->_choose_assembler;
-  # $self->_setup_default_renderer;
+  $self->_setup_default_renderer;
 }
 
-sub _setup_content_ids {
+sub _setup_default_renderer {
   my ($self) = @_;
+  return unless my $renderer_class = $self->manifest->{renderer};
 
-  for my $att (@{ $self->manifest->{attachments} || [] }) {
-    next unless $att->{path};
+  $renderer_class = String::RewritePrefix->rewrite(
+    { '=' => '', '' => 'Email::MIME::Kit::Renderer::' },
+    $renderer_class,
+  );
 
-    for my $header (@{ $att->{header} }) {
-      my ($header) = grep { /^[^:]/ } keys %$header;
-      Carp::croak("attachments must not supply content-id")
-        if lc $header eq 'content-id';
-    }
-
-    my $guid = Data::GUID->new->as_string;
-    push @{ $att->{header} }, {
-      'Content-Id' => $guid,
-      ':renderer'  => undef,
-    };
-
-    $self->_cid_registry->{ $att->{path} } = $guid;
-  }
+  eval "require $renderer_class; 1" or die $@;
+  my $renderer = $renderer_class->new({ kit => $self->kit });
+  $self->_set_default_renderer($renderer);
 }
 
 sub assemble {
   my ($self) = @_;
   my $stash = { %{ $_[1] || {} } };
 
-  my @alternatives = $self->manifest->{alteratives}->flatten;
-  if (@alternatives == 1) {
-    return $self->_assemble_singlepart($stash);
-  } else {
-    return $self->_assemble_multipart_alternatives($stash);
-  }
+  $self->assembler->assemble($stash);   
 }
 
 ## Thoughts on how to pick a type:
@@ -109,54 +87,59 @@ sub assemble {
 #   X  |   X  |        | throw
 #   X  |   X  |   X    | throw
 
-sub _choose_assembler {
-  my ($self) = @_;
-  return if $self->_has_assembler;
+sub kit { $_[0] }
+
+sub _assembler_from_manifest {
+  my ($self, $manifest, $parent) = @_;
 
   my $assembler_class;
 
-  if ($assembler_class = $self->manifest->{assembler}) {
+  if ($assembler_class = $manifest->{assembler}) {
     $assembler_class = String::RewritePrefix->rewrite(
       { '=' => '', '' => 'Email::MIME::Kit::Assembler::' },
       $assembler_class,
     );
   } else {
-    my $has_body = defined $self->manifest->{body};
-    my $has_alts = @{$self->manifest->{alternatives} || []};
-    my $has_att  = @{$self->manifest->{attachments} || []};
+    my $has_body = defined $manifest->{body};
+    my $has_path = defined $manifest->{path};
+    my $has_alts = @{ $manifest->{alternatives} || [] };
+    my $has_att  = @{ $manifest->{attachments}  || [] };
 
-    Carp::croak("neither body nor alternatives provided")
-      unless $has_body or $has_alts;
+    Carp::croak("neither body, path, nor alternatives provided")
+      unless $has_body or $has_path or $has_alts;
 
-    Carp::croak("you must provide only body or alternatives, not both")
-      if $has_body and $has_alts;
+    Carp::croak("you must provide only one of body, path, or alternatives")
+      unless (grep {$_} $has_body, $has_path, $has_alts) == 1;
 
-    $assembler_class = 'Email::MIME::Kit::Assembler::Simple';
+    $assembler_class = $has_body ? 'Email::MIME::Kit::Assembler::FromBody'
+                     : $has_path ? 'Email::MIME::Kit::Assembler::FromFile'
+                     : $has_alts ? 'Email::MIME::Kit::Assembler::Alts'
+                     :             confess "unreachable code is a mistake";
   }
 
   eval "require $assembler_class; 1" or die $@;
-  return $assembler_class->new({ kit => $self });
+  return $assembler_class->new({
+    kit      => $self->kit,
+    manifest => $manifest,
+    parent   => $parent,
+  });
 }
+
+has default_renderer => (
+  reader => 'default_renderer',
+  writer => '_set_default_renderer',
+  does   => 'Email::MIME::Kit::Role::Renderer',
+);
 
 has assembler => (
   reader    => 'assembler',
-  writer    => '_set_assembler',
-  predicate => '_has_assembler',
   does      => 'Email::MIME::Kit::Role::Assembler',
   required  => 1,
   lazy      => 1,
-  default   => sub { confess "no assembler supplied or guessable" },
-);
-
-sub _assemble_multipart_alternatives {
-  my ($self, $stash) = @_;
-  
-  my @alt_parts;
-  for my $alt ($self->manifest->{alternatives}->flatten) {
-    push @alt_parts, Email::MIME->new(
-      header => 
-    );
+  default   => sub {
+    my ($self) = @_;
+    return $self->_assembler_from_manifest($self->manifest);
   }
-}
+);
 
 1;

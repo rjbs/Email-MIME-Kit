@@ -9,4 +9,3 @@ my $kit = Email::MIME::Kit->new({ source => 't/test.mkit' });
 
 my $manifest = $kit->manifest;
 ok($manifest, 'got a manifest');
-
