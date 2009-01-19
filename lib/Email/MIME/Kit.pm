@@ -1,7 +1,10 @@
 package Email::MIME::Kit;
 use Moose;
+use Moose::Autobox;
 
 use Data::GUID ();
+use Email::MIME;
+use String::RewritePrefix;
 
 =head1 NAME
 
@@ -55,6 +58,9 @@ sub BUILD {
   $self->_set_manifest($manifest);
 
   $self->_setup_content_ids;
+
+  $self->_choose_assembler;
+  # $self->_setup_default_renderer;
 }
 
 sub _setup_content_ids {
@@ -76,6 +82,80 @@ sub _setup_content_ids {
     };
 
     $self->_cid_registry->{ $att->{path} } = $guid;
+  }
+}
+
+sub assemble {
+  my ($self) = @_;
+  my $stash = { %{ $_[1] || {} } };
+
+  my @alternatives = $self->manifest->{alteratives}->flatten;
+  if (@alternatives == 1) {
+    return $self->_assemble_singlepart($stash);
+  } else {
+    return $self->_assemble_multipart_alternatives($stash);
+  }
+}
+
+## Thoughts on how to pick a type:
+# 
+# body | alts | attach | result
+#      |      |        | throw
+#      |      |   X    | throw
+#      |   X  |        | alternative
+#      |   X  |   X    | mixed(alternative, ...)
+#   X  |      |        | single part
+#   X  |      |   X    | mixed(body type, ...)
+#   X  |   X  |        | throw
+#   X  |   X  |   X    | throw
+
+sub _choose_assembler {
+  my ($self) = @_;
+  return if $self->_has_assembler;
+
+  my $assembler_class;
+
+  if ($assembler_class = $self->manifest->{assembler}) {
+    $assembler_class = String::RewritePrefix->rewrite(
+      { '=' => '', '' => 'Email::MIME::Kit::Assembler::' },
+      $assembler_class,
+    );
+  } else {
+    my $has_body = defined $self->manifest->{body};
+    my $has_alts = @{$self->manifest->{alternatives} || []};
+    my $has_att  = @{$self->manifest->{attachments} || []};
+
+    Carp::croak("neither body nor alternatives provided")
+      unless $has_body or $has_alts;
+
+    Carp::croak("you must provide only body or alternatives, not both")
+      if $has_body and $has_alts;
+
+    $assembler_class = 'Email::MIME::Kit::Assembler::Simple';
+  }
+
+  eval "require $assembler_class; 1" or die $@;
+  return $assembler_class->new({ kit => $self });
+}
+
+has assembler => (
+  reader    => 'assembler',
+  writer    => '_set_assembler',
+  predicate => '_has_assembler',
+  does      => 'Email::MIME::Kit::Role::Assembler',
+  required  => 1,
+  lazy      => 1,
+  default   => sub { confess "no assembler supplied or guessable" },
+);
+
+sub _assemble_multipart_alternatives {
+  my ($self, $stash) = @_;
+  
+  my @alt_parts;
+  for my $alt ($self->manifest->{alternatives}->flatten) {
+    push @alt_parts, Email::MIME->new(
+      header => 
+    );
   }
 }
 

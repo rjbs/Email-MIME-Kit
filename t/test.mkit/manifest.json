@@ -1,7 +1,7 @@
 {
   "renderer": "TestRenderer",
   "header": [
-    { "Subject": "Hello [% friend.name %]"     },
+    { "Subject": "Hello [% friend.name() %]"     },
     { "From":    "Test Sender <test@test.com>" },
     { "X-Test":  "This is a [% unrendered %] test.", ":renderer": null  }
   ],
