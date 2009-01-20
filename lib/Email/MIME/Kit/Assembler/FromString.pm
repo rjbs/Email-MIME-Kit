@@ -18,13 +18,12 @@ sub assemble {
   my %attr = %{ $self->manifest->{attributes} || {} };
   $attr{content_type} = $attr{content_type} || 'text/plain';
 
-  my $email = Email::MIME->create(
+  my $email = $self->_contain_attachments({
     attributes => \%attr,
-    header     => $self->_prep_header($self->manifest->{header}, $stash),
+    header     => $self->manifest->{header},
+    stash      => $stash,
     body       => $body,
-  );
-
-  my $container = $self->_contain_attachments($email, $stash);
+  });
 }
 
 no Moose;

@@ -15,13 +15,14 @@ sub assemble {
     confess "illegal content_type for mail with alts: $attr{content_type}";
   }
 
-  my $email = Email::MIME->create(
-    attributes => \%attr,
-    header     => $self->_prep_header($self->manifest->{header}, $stash),
-    parts      => [ map { $_->assemble($stash) } $self->_alternatives ],
-  );
+  my $parts = [ map { $_->assemble($stash) } $self->_alternatives ];
 
-  my $container = $self->_contain_attachments($email, $stash);
+  my $email = $self->_contain_attachments({
+    attributes => \%attr,
+    header     => $self->manifest->{header},
+    stash      => $stash,
+    parts      => $parts,
+  });
 }
 
 no Moose;

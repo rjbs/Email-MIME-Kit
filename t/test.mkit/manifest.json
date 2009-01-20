@@ -19,8 +19,9 @@
       "renderer": null
     },
     {
-      "type": [ "text/html", { "charset": "utf-8" } ],
+      "type": "text/html",
       "path": "better-alternative.html",
+      "attributes": { "charset": "utf-8" },
       "attachments": [
         {
           "type": "image/jpeg",

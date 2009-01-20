@@ -146,15 +146,45 @@ sub _prep_header {
   return \@done_header;
 }
 
-sub _contain_attachments {
-  my ($self, $email, $stash) = @_;
-  
-  return $email unless my @attachments = $self->_attachments;
+#  my $email = Email::MIME->create(
+#    attributes => \%attr,
+#    header     => $self->_prep_header($self->manifest->{header}, $stash),
+#    body       => $body,
+#  );
+#
+#  my $email = $self->_contain_attachments({
+#    attributes => \%attr,
+#    header     => $self->manifest->{header},
+#    stash      => $stash,
+#    body       => $body,
+#  });
 
-  my @att_parts = map { $_->assemble($stash) } @attachments;
+sub _contain_attachments {
+  my ($self, $arg) = @_;
+  
+  my @attachments = $self->_attachments;
+  my $header = $self->_prep_header($arg->{header}, $arg->{stash});
+
+  unless (@attachments) {
+    return Email::MIME->create(
+      attributes => $arg->{attributes},
+      header     => $header,
+      body       => $arg->{body},
+      parts      => $arg->{parts},
+    );
+  }
+
+  my $email = Email::MIME->create(
+    attributes => $arg->{attributes},
+    body       => $arg->{body},
+    parts      => $arg->{parts},
+  );
+
+  my @att_parts = map { $_->assemble($arg->{stash}) } @attachments;
 
   my $container = Email::MIME->create(
     attributes => { content_type => 'multipart/mixed' },
+    header     => $header,
     parts      => [ $email, @att_parts ],
   );
 
