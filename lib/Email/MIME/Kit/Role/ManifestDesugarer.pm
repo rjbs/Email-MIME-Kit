@@ -1,9 +1,9 @@
 package Email::MIME::Kit::Role::ManifestDesugarer;
 use Moose::Role;
 
-around read_manifest => sub {
-  my ($orig, $self, @args) = @_;
-  my $content = $self->$orig(@args);
+my $ct_desugar;
+$ct_desugar = sub {
+  my ($self, $content) = @_;
 
   for my $thing (qw(alternatives attachments)) {
     for my $part (@{ $content->{ $thing } }) {
@@ -14,8 +14,17 @@ around read_manifest => sub {
 
         $part->{attributes}{content_type} = $type;
       }
+
+      $self->$ct_desugar($part);
     }
   }
+};
+
+around read_manifest => sub {
+  my ($orig, $self, @args) = @_;
+  my $content = $self->$orig(@args);
+
+  $self->$ct_desugar($content);
 
   return $content;
 };

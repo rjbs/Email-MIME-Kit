@@ -104,7 +104,7 @@ sub _set_attachment_info {
 
     # XXX: Steal the attachment-name-generator from Email::MIME::Modifier, or
     # something. -- rjbs, 2009-01-20
-    $filename = "unknown-attachment";
+    $filename ||= "unknown-attachment";
 
     $attr->{filename} = $filename;
   }
