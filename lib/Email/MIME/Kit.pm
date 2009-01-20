@@ -14,7 +14,21 @@ Email::MIME::Kit - build messages from templates
 
 has source => (is => 'ro', required => 1);
 
-sub manifest_reader_class { 'Email::MIME::Kit::ManifestReader::JSON' }
+has manifest_reader_class => (
+  is          => 'ro',
+  default     => '=Email::MIME::Kit::ManifestReader::JSON',
+  required    => 1,
+  initializer => sub {
+    my ($self, $value, $set) = @_;
+
+    $value = String::RewritePrefix->rewrite(
+      { '=' => '', '' => 'Email::MIME::Kit::ManifestReader::' },
+      $value,
+    );
+
+    $set->($value);
+  },
+);
 
 has manifest_reader => (
   is   => 'ro',
@@ -30,7 +44,21 @@ has manifest_reader => (
 
 has manifest => (reader => 'manifest', writer => '_set_manifest');
 
-sub kit_reader_class { 'Email::MIME::Kit::KitReader::Dir' }
+has kit_reader_class => (
+  is          => 'ro',
+  default     => '=Email::MIME::Kit::KitReader::Dir',
+  required    => 1,
+  initializer => sub {
+    my ($self, $value, $set) = @_;
+
+    $value = String::RewritePrefix->rewrite(
+      { '=' => '', '' => 'Email::MIME::Kit::KitReader::' },
+      $value,
+    );
+
+    $set->($value);
+  },
+);
 
 has kit_reader => (
   is   => 'ro',
@@ -74,18 +102,6 @@ sub assemble {
 
   $self->assembler->assemble($stash);   
 }
-
-## Thoughts on how to pick a type:
-# 
-# body | alts | attach | result
-#      |      |        | throw
-#      |      |   X    | throw
-#      |   X  |        | alternative
-#      |   X  |   X    | mixed(alternative, ...)
-#   X  |      |        | single part
-#   X  |      |   X    | mixed(body type, ...)
-#   X  |   X  |        | throw
-#   X  |   X  |   X    | throw
 
 sub kit { $_[0] }
 
