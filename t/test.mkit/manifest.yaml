@@ -1,0 +1,28 @@
+---
+renderer: TestRenderer
+header:
+- Subject: "Hello [% friend.name() %]"
+- From:    "Test Sender <test@test.com>"
+- X-Test:  "This is a [% unrendered %] test."
+  ":renderer": ~
+alternatives:
+- type: text/plain
+  body: "We don't support tests."
+- attributes:
+    content_type: text/html
+    charset: utf-8
+  body: "<p>This is the [% crappier %] alternative HTML part.  Renderer: null</p>"
+  renderer: ~
+- container_type: multipart/related
+  type: text/html
+  path: better-alternative.html
+  attributes:
+    charset: utf-8
+  attachments:
+  - type: image/jpeg
+    path: logo.jpg
+attachments:
+- type: application/pdf
+  path: bogus-report.pdf
+  attributes:
+    filename: report.pdf
