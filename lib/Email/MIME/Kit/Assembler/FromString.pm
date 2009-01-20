@@ -19,6 +19,8 @@ sub assemble {
     header => $self->_prep_header($self->manifest->{header}, $stash),
     body   => $body,
   );
+
+  my $container = $self->_contain_attachments($email, $stash);
 }
 
 no Moose;

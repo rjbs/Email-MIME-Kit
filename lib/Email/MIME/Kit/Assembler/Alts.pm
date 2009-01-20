@@ -15,6 +15,8 @@ sub assemble {
       map { $_->assemble($stash) } $self->_alternatives
     ],
   );
+
+  my $container = $self->_contain_attachments($email, $stash);
 }
 
 no Moose;
