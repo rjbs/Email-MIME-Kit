@@ -73,6 +73,35 @@ has kit_reader => (
   handles => [ qw(get_kit_entry) ],
 );
 
+has validator_class => (
+  is          => 'ro',
+  default     => undef,
+  initializer => sub {
+    my ($self, $value, $set) = @_;
+    return unless defined $value;
+
+    $value = String::RewritePrefix->rewrite(
+      { '=' => '', '' => 'Email::MIME::Kit::Validator::' },
+      $value,
+    );
+
+    $set->($value);
+  },
+);
+
+has validator => (
+  is   => 'ro',
+  isa  => 'Maybe[Email::MIME::Kit::Role::Validator]',
+  lazy    => 1, # is this really needed? -- rjbs, 2009-01-20
+  default => sub {
+    my ($self) = @_;
+    return unless my $class = $self->validator_class;
+
+    eval "require $class; 1" or die $@;
+    $class->new({ kit => $self });
+  },
+);
+
 sub BUILD {
   my ($self) = @_;
 
@@ -97,10 +126,15 @@ sub _setup_default_renderer {
 }
 
 sub assemble {
-  my ($self) = @_;
-  my $stash = { %{ $_[1] || {} } };
+  my ($self, $stash) = @_;
 
-  $self->assembler->assemble($stash);   
+  $self->validator->validate($stash) if $self->validator;
+
+  # Do I really need or want to do this?  Anything that alters the stash should
+  # do so via localization. -- rjbs, 2009-01-20
+  my $copied_stash = { %{ $stash || {} } };
+
+  $self->assembler->assemble($copied_stash);   
 }
 
 sub kit { $_[0] }
