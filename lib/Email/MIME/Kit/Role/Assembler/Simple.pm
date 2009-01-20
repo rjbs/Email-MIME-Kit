@@ -92,32 +92,21 @@ sub _build_subassemblies {
 sub _set_attachment_info {
   my ($self, $manifest) = @_;
 
-  my $header = $manifest->{header};
+  my $attr = $manifest->{attributes} ||= {};
 
-  push @$header, {
-    'Content-Transfer-Encoding' => 'base64',
-  };
+  $attr->{encoding}    = 'base64' unless exists $attr->{encoding};
+  $attr->{disposition} = 'attachment' unless exists $attr->{disposition};
 
-  my $has_disp;
-
-  for my $header (@$header) {
-    my ($header) = grep { /^[^:]/ } keys %$header;
-
-    $has_disp = 1, last if lc $header eq 'content-disposition';
-  }
-
-  unless ($has_disp) {
+  unless (exists $attr->{filename}) {
     my $filename;
     ($filename) = File::Basename::fileparse($manifest->{path})
       if $manifest->{path};
 
-    push @$header, {
-      'Content-Disposition' => [
-        attachment => {
-          ($filename ? (filename => $filename) : ()),
-        },
-      ],
-    };
+    # XXX: Steal the attachment-name-generator from Email::MIME::Modifier, or
+    # something. -- rjbs, 2009-01-20
+    $filename = "unknown-attachment";
+
+    $attr->{filename} = $filename;
   }
 }
 

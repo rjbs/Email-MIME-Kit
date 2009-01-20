@@ -9,7 +9,10 @@ around read_manifest => sub {
     for my $part (@{ $content->{ $thing } }) {
       my $headers = $part->{header} ||= [];
       if (my $type = delete $part->{type}) {
-        push @$headers, { 'Content-Type' => $type };
+        confess "specified both type and content_type attribute"
+          if $part->{attributes}{content_type};
+
+        $part->{attributes}{content_type} = $type;
       }
     }
   }

@@ -15,9 +15,13 @@ sub assemble {
   # 2009-01-19
   $body .= "\x0d\x0a" unless $body =~ /[\x0d|\x0a]\z/;
 
+  my %attr = %{ $self->manifest->{attributes} || {} };
+  $attr{content_type} = $attr{content_type} || 'text/plain';
+
   my $email = Email::MIME->create(
-    header => $self->_prep_header($self->manifest->{header}, $stash),
-    body   => $body,
+    attributes => \%attr,
+    header     => $self->_prep_header($self->manifest->{header}, $stash),
+    body       => $body,
   );
 
   my $container = $self->_contain_attachments($email, $stash);

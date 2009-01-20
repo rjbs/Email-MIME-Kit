@@ -11,9 +11,10 @@
       "body": "We don't support tests."
     },
     {
-      "header": [
-        { "Content-Type": "text/html; charset=utf-8" }
-      ],
+      "attributes": {
+        "content_type": "text/html",
+        "charset": "utf-8"
+      },
       "body": "<p>This is the [% crappier %] alternative HTML part.  Renderer: null</p>",
       "renderer": null
     },
@@ -31,10 +32,8 @@
   "attachments": [
     {
       "type": "application/pdf",
-      "header": [
-        { "Content-Disposition": [ "attachment", {"filename": "report.pdf"} ] }
-      ],
-      "path": "bogus-report.pdf"
+      "path": "bogus-report.pdf",
+      "attributes": { "filename": "report.pdf" }
     }
   ]
 }

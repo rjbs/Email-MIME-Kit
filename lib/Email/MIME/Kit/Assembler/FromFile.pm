@@ -13,9 +13,13 @@ sub assemble {
 
   my $header = $self->_prep_header($self->manifest->{header}, $stash);
 
+  my %attr = %{ $self->manifest->{attributes} || {} };
+  $attr{content_type} = $attr{content_type} || 'text/plain';
+
   my $email = Email::MIME->create(
-    header => $header,
-    body   => $$body_ref,
+    attributes => \%attr,
+    header     => $header,
+    body       => $$body_ref,
   );
 
   my $container = $self->_contain_attachments($email, $stash);
