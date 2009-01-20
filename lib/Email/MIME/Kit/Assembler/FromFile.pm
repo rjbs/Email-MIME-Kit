@@ -19,6 +19,7 @@ sub assemble {
     header     => $self->manifest->{header},
     stash      => $stash,
     body       => $$body_ref,
+    container_type => $self->manifest->{container_type},
   });
 }
 

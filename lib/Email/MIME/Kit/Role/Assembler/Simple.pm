@@ -118,6 +118,7 @@ has renderer => (
 
 sub render {
   my ($self, $input_ref, $stash) = @_;
+  local $stash->{cid_for} = sub { $self->cid_for_path($_[0]) };
   return $input_ref unless my $renderer = $self->renderer;
   return $renderer->render($input_ref, $stash);
 }
@@ -165,7 +166,11 @@ sub _contain_attachments {
   my @attachments = $self->_attachments;
   my $header = $self->_prep_header($arg->{header}, $arg->{stash});
 
+  my $ct = $arg->{container_type};
+
   unless (@attachments) {
+    confess "container_type given for single-part assembly" if $ct;
+
     return Email::MIME->create(
       attributes => $arg->{attributes},
       header     => $header,
@@ -183,7 +188,7 @@ sub _contain_attachments {
   my @att_parts = map { $_->assemble($arg->{stash}) } @attachments;
 
   my $container = Email::MIME->create(
-    attributes => { content_type => 'multipart/mixed' },
+    attributes => { content_type => ($ct || 'multipart/mixed') },
     header     => $header,
     parts      => [ $email, @att_parts ],
   );
@@ -196,6 +201,15 @@ has _cid_registry => (
   init_arg => undef,
   default  => sub { { } },
 );
+
+sub cid_for_path {
+  my ($self, $path) = @_;
+  my $cid = $self->_cid_registry->{ $path };
+
+  confess "no content-id for path $path" unless $cid;
+
+  return $cid;
+}
 
 sub _setup_content_ids {
   my ($self) = @_;

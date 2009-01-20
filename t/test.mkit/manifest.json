@@ -19,6 +19,7 @@
       "renderer": null
     },
     {
+      "container_type": "multipart/related",
       "type": "text/html",
       "path": "better-alternative.html",
       "attributes": { "charset": "utf-8" },
