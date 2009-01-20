@@ -23,3 +23,5 @@ my $output = $kit->assemble({
 });
 
 print $output->as_string;
+# print $output->debug_structure;
+

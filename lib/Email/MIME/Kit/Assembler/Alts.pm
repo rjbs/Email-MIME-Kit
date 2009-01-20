@@ -9,6 +9,7 @@ sub assemble {
   my ($self, $stash) = @_;
 
   my $email = Email::MIME->create(
+    attributes => { content_type => 'multipart/alternative' },
     header => $self->_prep_header($self->manifest->{header}, $stash),
     parts  => [
       map { $_->assemble($stash) } $self->_alternatives

@@ -4,6 +4,7 @@ use Moose::Role;
 with 'Email::MIME::Kit::Role::Assembler';
 
 use Data::GUID;
+use File::Basename;
 
 sub BUILD {
   my ($self, $ARG) = @_;
@@ -77,13 +78,46 @@ sub _build_subassemblies {
   }
 
   for my $attach (@{ $self->manifest->{attachments} || [] }) {
-    push @{ $self->_attachments },
-      $self->kit->_assembler_from_manifest($attach, $self);
+    my $assembler = $self->kit->_assembler_from_manifest($attach, $self);
+    $assembler->_set_attachment_info($attach);
+    push @{ $self->_attachments }, $assembler;
   }
 
   for my $alt (@{ $self->manifest->{alternatives} || [] }) {
     push @{ $self->_alternatives },
       $self->kit->_assembler_from_manifest($alt, $self);
+  }
+}
+
+sub _set_attachment_info {
+  my ($self, $manifest) = @_;
+
+  my $header = $manifest->{header};
+
+  push @$header, {
+    'Content-Transfer-Encoding' => 'base64',
+  };
+
+  my $has_disp;
+
+  for my $header (@$header) {
+    my ($header) = grep { /^[^:]/ } keys %$header;
+
+    $has_disp = 1, last if lc $header eq 'content-disposition';
+  }
+
+  unless ($has_disp) {
+    my $filename;
+    ($filename) = File::Basename::fileparse($manifest->{path})
+      if $manifest->{path};
+
+    push @$header, {
+      'Content-Disposition' => [
+        attachment => {
+          ($filename ? (filename => $filename) : ()),
+        },
+      ],
+    };
   }
 }
 
@@ -121,6 +155,21 @@ sub _prep_header {
   }
 
   return \@done_header;
+}
+
+sub _contain_attachments {
+  my ($self, $email, $stash) = @_;
+  
+  return $email unless my @attachments = $self->_attachments;
+
+  my @att_parts = map { $_->assemble($stash) } @attachments;
+
+  my $container = Email::MIME->create(
+    attributes => { content_type => 'multipart/mixed' },
+    parts      => [ $email, @att_parts ],
+  );
+
+  return $container;
 }
 
 has _cid_registry => (
