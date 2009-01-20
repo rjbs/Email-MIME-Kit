@@ -22,4 +22,4 @@ my $output = $kit->assemble({
   how_long => '10 years',
 });
 
-
+print $output->as_string;

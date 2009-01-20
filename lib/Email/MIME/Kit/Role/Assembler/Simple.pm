@@ -93,6 +93,36 @@ has renderer => (
   does   => 'Email::MIME::Kit::Role::Renderer',
 );
 
+sub render {
+  my ($self, $input_ref, $stash) = @_;
+  return $input_ref unless my $renderer = $self->renderer;
+  return $renderer->render($input_ref, $stash);
+}
+
+sub _prep_header {
+  my ($self, $header, $stash) = @_;
+
+  my @done_header;
+  for my $entry (@$header) {
+    confess "no field name candidates"
+      unless my (@hval) = grep { /^[^:]/ } keys %$entry;
+    confess "multiple field name candidates: @hval" if @hval > 1;
+    my $value = $entry->{ $hval[ 0 ] };
+
+    if (ref $value) {
+      my ($v, $p) = @$value;
+      $value = join q{; }, $v, map { "$_=$p->{$_}" } keys %$p;
+    } else {
+      # XXX: respect the ":renderer" entry -- rjbs, 2009-01-19
+      $value = ${ $self->render(\$value, $stash) };
+    }
+
+    push @done_header, $hval[0] => $value;
+  }
+
+  return \@done_header;
+}
+
 has _cid_registry => (
   is       => 'ro',
   init_arg => undef,
