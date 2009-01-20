@@ -6,10 +6,7 @@ use lib 't/lib';
 
 use Email::MIME::Kit;
 
-my $kit = Email::MIME::Kit->new({
-  manifest_reader_class => 'YAML',
-  source => 't/test.mkit'
-});
+my $kit = Email::MIME::Kit->new({ source => 't/test.mkit' });
 
 my $manifest = $kit->manifest;
 ok($manifest, 'got a manifest');
