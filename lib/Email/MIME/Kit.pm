@@ -68,14 +68,15 @@ has kit_reader => (
     my ($self) = @_;
     my $class = $self->kit_reader_class;
     eval "require $class; 1" or die $@;
-    $class->new($self->source, { kit => $self });
+    $class->new({ kit => $self });
   },
   handles => [ qw(get_kit_entry) ],
 );
 
 has validator_class => (
   is          => 'ro',
-  default     => undef,
+  lazy        => 1,
+  default     => sub { $_[0]->manifest->{validator} },
   initializer => sub {
     my ($self, $value, $set) = @_;
     return unless defined $value;
@@ -91,7 +92,7 @@ has validator_class => (
 
 has validator => (
   is   => 'ro',
-  isa  => 'Maybe[Email::MIME::Kit::Role::Validator]',
+  does => 'Email::MIME::Kit::Role::Validator',
   lazy    => 1, # is this really needed? -- rjbs, 2009-01-20
   default => sub {
     my ($self) = @_;

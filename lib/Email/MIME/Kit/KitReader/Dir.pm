@@ -4,22 +4,11 @@ with 'Email::MIME::Kit::Role::KitReader';
 
 use File::Spec;
 
-has dir => (is => 'ro', required => 1);
-
-sub BUILDARGS {
-  my ($self, @args) = @_;
-  return $self->SUPER::BUILDARGS(@args)
-    unless (@args == 1 and ! ref $args[0])
-        or (@args == 2 and ! ref $args[0] and ref $args[1] eq 'HASH');
-
-  return { %{ $args[1] }, dir => $args[0] };
-}
-
 # cache sometimes
 sub get_kit_entry {
   my ($self, $path) = @_;
   
-  my $fullpath = File::Spec->catfile($self->dir, $path);
+  my $fullpath = File::Spec->catfile($self->kit->source, $path);
 
   open my $fh, '<', $fullpath or die "can't open $fullpath for reading: $!";
   my $content = do { local $/; <$fh> };
