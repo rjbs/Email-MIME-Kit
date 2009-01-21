@@ -1,7 +1,5 @@
 {
-  "validator": "Simplest",
-  "__required_fields": [ "friend" ],
-
+  "validator": [ "Simplest", { "required_fields": [ "friend" ] } ],
   "renderer": "TestRenderer",
   "header": [
     { "Subject": "Hello [% friend.name() %]"     },

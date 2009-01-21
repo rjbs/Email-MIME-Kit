@@ -73,33 +73,28 @@ has kit_reader => (
   handles => [ qw(get_kit_entry) ],
 );
 
-has validator_class => (
-  is          => 'ro',
-  lazy        => 1,
-  default     => sub { $_[0]->manifest->{validator} },
-  initializer => sub {
-    my ($self, $value, $set) = @_;
-    return unless defined $value;
-
-    $value = String::RewritePrefix->rewrite(
-      { '=' => '', '' => 'Email::MIME::Kit::Validator::' },
-      $value,
-    );
-
-    $set->($value);
-  },
-);
-
 has validator => (
   is   => 'ro',
   does => 'Email::MIME::Kit::Role::Validator',
   lazy    => 1, # is this really needed? -- rjbs, 2009-01-20
   default => sub {
     my ($self) = @_;
-    return unless my $class = $self->validator_class;
+    return unless my $entry = $self->manifest->{validator};
+
+    my ($class, $arg);
+    if (ref $entry) {
+      ($class, $arg) = @$entry;
+    } else {
+      ($class, $arg) = ($entry, {});
+    }
+
+    $class = String::RewritePrefix->rewrite(
+      { '=' => '', '' => 'Email::MIME::Kit::Validator::' },
+      $class,
+    );
 
     eval "require $class; 1" or die $@;
-    $class->new({ kit => $self });
+    $class->new({ %$arg, kit => $self });
   },
 );
 
