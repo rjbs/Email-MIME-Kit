@@ -1,6 +1,7 @@
 package Email::MIME::Kit;
 use Moose;
 use Moose::Autobox;
+use Moose::Util::TypeConstraints;
 
 use Data::GUID ();
 use Email::MIME;
@@ -72,10 +73,11 @@ has kit_reader => (
   },
   handles => [ qw(get_kit_entry) ],
 );
+  
 
 has validator => (
   is   => 'ro',
-  does => 'Email::MIME::Kit::Role::Validator',
+  isa  => maybe_type(role_type('Email::MIME::Kit::Role::Validator]')),
   lazy    => 1, # is this really needed? -- rjbs, 2009-01-20
   default => sub {
     my ($self) = @_;
@@ -188,4 +190,6 @@ has assembler => (
   }
 );
 
+no Moose::Util::TypeConstraints;
+no Moose;
 1;

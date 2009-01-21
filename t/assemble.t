@@ -22,6 +22,5 @@ my $output = $kit->assemble({
   how_long => '10 years',
 });
 
-print $output->as_string;
-# print $output->debug_structure;
+print $output->debug_structure;
 
