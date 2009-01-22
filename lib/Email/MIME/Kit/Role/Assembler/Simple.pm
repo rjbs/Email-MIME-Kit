@@ -1,5 +1,6 @@
 package Email::MIME::Kit::Role::Assembler::Simple;
 use Moose::Role;
+use Moose::Util::TypeConstraints;
 
 with 'Email::MIME::Kit::Role::Assembler';
 
@@ -7,48 +8,63 @@ use Data::GUID;
 use File::Basename;
 
 sub BUILD {
-  my ($self, $ARG) = @_;
+  my ($self) = @_;
   $self->_setup_content_ids;
-  $self->_pick_renderer($ARG);
+  $self->_pick_and_set_renderer;
   $self->_build_subassemblies;
 }
 
 has parent => (
-  is   => 'ro',
-  does => 'Maybe[Email::MIME::Kit::Role::Assembler]',
+  is  => 'ro',
+  isa => maybe_type(role_type('Email::MIME::Kit::Role::Assembler')),
 );
 
 has renderer => (
   reader   => 'renderer',
   writer   => '_set_renderer',
   clearer  => '_unset_renderer',
-  does     => 'Email::MIME::Kit::Renderer',
+  isa      => maybe_type(role_type('Email::MIME::Kit::Role::Renderer')),
   init_arg => undef,
 );
 
-sub _pick_renderer {
-  my ($self, $ARG) = @_;
-
-  my $renderer = $self->kit->default_renderer;
+sub _renderer_from_override {
+  my ($self, $override) = @_;
   
-  # We check ->parent because we do not want to re-set the renderer on
-  # the top-level assembler. -- rjbs, 2009-01-19
-  if (exists $self->manifest->{renderer} and $self->parent) {
-    if (! defined $self->manifest->{renderer}) {
-      # Allow an explicit undef to mean "no rendering is to be done." -- rjbs,
-      # 2009-01-19
-      return;
-    }
+  # Allow an explicit undef to mean "no rendering is to be done." -- rjbs,
+  # 2009-01-19
+  return undef unless defined $override;
 
-    my $renderer_class = String::RewritePrefix->rewrite(
-      { '=' => '', '' => 'Email::MIME::Kit::Renderer::' },
-      $self->manifest->{renderer},
-    );
+  my $renderer_class = String::RewritePrefix->rewrite(
+    { '=' => '', '' => 'Email::MIME::Kit::Renderer::' },
+    $override,
+  );
 
-    eval "require $renderer_class; 1" or die $@;
-    $renderer = $renderer_class->new({ kit => $self->kit });
+  eval "require $renderer_class; 1" or die $@;
+  my $renderer = $renderer_class->new({ kit => $self->kit });
+
+  return $renderer;
+}
+
+sub _pick_and_set_renderer {
+  my ($self)  = @_;
+
+  # "renderer" entry at top-level sets the kit default_renderer, so trying to
+  # look at the "renderer" entry at top-level for an override is nonsensical
+  # -- rjbs, 2009-01-22
+  unless ($self->parent) {
+    $self->_set_renderer($self->kit->default_renderer);
+    return;
   }
 
+  # If there's no override, we just use the parent.  We don't need to worry
+  # about the "there is no parent" case, because that was handled above. --
+  # rjbs, 2009-01-22
+  unless (exists $self->manifest->{renderer}) {
+    $self->_set_renderer($self->parent->renderer);
+    return;
+  }
+
+  my $renderer = $self->_renderer_from_override($self->manifest->{reader});
   $self->_set_renderer($renderer);
 }
 
@@ -110,12 +126,6 @@ sub _set_attachment_info {
   }
 }
 
-has renderer => (
-  reader => 'renderer',
-  writer => '_set_renderer',
-  does   => 'Email::MIME::Kit::Role::Renderer',
-);
-
 sub render {
   my ($self, $input_ref, $stash) = @_;
   local $stash->{cid_for} = sub { $self->cid_for_path($_[0]) };
@@ -137,8 +147,15 @@ sub _prep_header {
       my ($v, $p) = @$value;
       $value = join q{; }, $v, map { "$_=$p->{$_}" } keys %$p;
     } else {
-      # XXX: respect the ":renderer" entry -- rjbs, 2009-01-19
-      $value = ${ $self->render(\$value, $stash) };
+      # I don't think I need to bother with $self->render, which will set up
+      # the cid_for callback.  Honestly, who is going to be referencing a
+      # content-id from a header?  Let's hope I never find out... -- rjbs,
+      # 2009-01-22
+      my $renderer = exists $entry->{':renderer'}
+                   ? $self->_renderer_from_override($entry->{':renderer'})
+                   : $self->renderer;
+
+      $value = ${ $renderer->render(\$value, $stash) } if defined $renderer;
     }
 
     push @done_header, $hval[0] => $value;
@@ -146,19 +163,6 @@ sub _prep_header {
 
   return \@done_header;
 }
-
-#  my $email = Email::MIME->create(
-#    attributes => \%attr,
-#    header     => $self->_prep_header($self->manifest->{header}, $stash),
-#    body       => $body,
-#  );
-#
-#  my $email = $self->_contain_attachments({
-#    attributes => \%attr,
-#    header     => $self->manifest->{header},
-#    stash      => $stash,
-#    body       => $body,
-#  });
 
 sub _contain_attachments {
   my ($self, $arg) = @_;
@@ -233,5 +237,6 @@ sub _setup_content_ids {
   }
 }
 
+no Moose::Util::TypeConstraints;
 no Moose::Role;
 1;

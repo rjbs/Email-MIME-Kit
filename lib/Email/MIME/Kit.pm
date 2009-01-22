@@ -176,12 +176,12 @@ sub _assembler_from_manifest {
 has default_renderer => (
   reader => 'default_renderer',
   writer => '_set_default_renderer',
-  does   => 'Email::MIME::Kit::Role::Renderer',
+  isa    => role_type('Email::MIME::Kit::Role::Renderer'),
 );
 
 has assembler => (
   reader    => 'assembler',
-  does      => 'Email::MIME::Kit::Role::Assembler',
+  isa       => role_type('Email::MIME::Kit::Role::Assembler'),
   required  => 1,
   lazy      => 1,
   default   => sub {
