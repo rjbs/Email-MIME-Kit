@@ -23,7 +23,6 @@ for my $args (
   my $kit = Email::MIME::Kit->new({
     @{ $args->[1] },
     source     => 't/test.mkit',
-    kit_reader => 'Dir',
   });
 
   my $manifest = $kit->manifest;
