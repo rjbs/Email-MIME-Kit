@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 42;
+use Test::More tests => 2 * 23;
 use lib 't/lib';
 
 use Email::MIME::Kit;
@@ -27,6 +27,13 @@ for my $args (
 
   my $manifest = $kit->manifest;
   ok($manifest, 'got a manifest');
+
+  {
+    my $ok = eval { $kit->assemble; 1 };
+    my $err = $@;
+    ok(! $ok, "we couldn't assemble the kit without needed params");
+    like($err, qr/friend/, "specifically, the 'friend' param");
+  }
 
   my $email = $kit->assemble({
     friend   => TestFriend->new('Jimbo Johnson'),
