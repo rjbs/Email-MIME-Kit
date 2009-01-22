@@ -1,9 +1,13 @@
 package Email::MIME::Kit::Assembler::Alts;
 use Moose;
-
+with 'Email::MIME::Kit::Role::Assembler::Simple';
 our $VERSION = '0.001';
 
-with 'Email::MIME::Kit::Role::Assembler::Simple';
+=head1 NAME
+
+Email::MIME::Kit::Assembler::Alts - assemble multipart/alternative messages
+
+=cut
 
 use Email::MIME::Creator;
 
