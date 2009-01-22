@@ -77,7 +77,7 @@ has kit_reader => (
 
 has validator => (
   is   => 'ro',
-  isa  => maybe_type(role_type('Email::MIME::Kit::Role::Validator]')),
+  isa  => maybe_type(role_type('Email::MIME::Kit::Role::Validator')),
   lazy    => 1, # is this really needed? -- rjbs, 2009-01-20
   default => sub {
     my ($self) = @_;
