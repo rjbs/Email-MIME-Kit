@@ -6,8 +6,8 @@ all_from 'lib/Email/MIME/Kit.pm';
 
 test_requires 'Test::More'          => 0;
 
-requires 'Data::GUID';                    # used to set content-ids as needed
 requires 'Email::MIME::Creator' => 1.455; # content-type fix
+requires 'Email::MessageID'     => 1.400; # for the in_brackets method
 requires 'JSON' => 2;                     # the new API
 requires 'Moose' => 0.65                  # maybe_type
 requires 'String::RewritePrefix';
@@ -18,6 +18,8 @@ requires 'YAML::XS';
 
 requires 'File::Basename';  # core! used for picking filename for attachments
 requires 'File::Spec';      # core!
+
+test_requires 'Test::Deep';
 
 auto_manifest;
 
