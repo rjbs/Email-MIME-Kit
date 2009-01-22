@@ -3,6 +3,12 @@ use Moose::Role;
 
 our $VERSION = '0.001';
 
+=head1 NAME
+
+Email::MIME::Kit::Role::ManifestDesugarer - helper for desugaring manifests
+
+=cut
+
 my $ct_desugar;
 $ct_desugar = sub {
   my ($self, $content) = @_;

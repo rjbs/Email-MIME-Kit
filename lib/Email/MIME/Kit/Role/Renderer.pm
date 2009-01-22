@@ -3,6 +3,12 @@ use Moose::Role;
 
 our $VERSION = '0.001';
 
+=head1 NAME
+
+Email::MIME::Kit::Role::Renderer - things that render templates into contents
+
+=cut
+
 requires 'render';
 
 has kit => (

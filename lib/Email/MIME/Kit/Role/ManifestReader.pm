@@ -4,6 +4,12 @@ with 'Email::MIME::Kit::Role::Component';
 
 our $VERSION = '0.001';
 
+=head1 NAME
+
+Email::MIME::Kit::Role::ManifestReader - things that read kit manifests
+
+=cut
+
 requires 'read_manifest';
 
 no Moose::Role;

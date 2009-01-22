@@ -4,6 +4,12 @@ with 'Email::MIME::Kit::Role::KitReader';
 
 our $VERSION = '0.001';
 
+=head1 NAME
+
+Email::MIME::Kit::KitReader::Dir - read kit entries out of a directory
+
+=cut
+
 use File::Spec;
 
 # cache sometimes

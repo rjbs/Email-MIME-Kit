@@ -1,9 +1,14 @@
 package Email::MIME::Kit::Assembler::FromString;
 use Moose;
-
 with 'Email::MIME::Kit::Role::Assembler::Simple';
 
 our $VERSION = '0.001';
+
+=head1 NAME
+
+Email::MIME::Kit::Assembler::FromString - assemble parts from strings
+
+=cut
 
 use Email::MIME::Creator;
 

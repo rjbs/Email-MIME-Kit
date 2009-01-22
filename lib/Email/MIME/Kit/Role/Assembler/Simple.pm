@@ -6,6 +6,12 @@ with 'Email::MIME::Kit::Role::Assembler';
 
 our $VERSION = '0.001';
 
+=head1 NAME
+
+Email::MIME::Kit::Role::Assembler::Simple - a badly documented assembler role
+
+=cut
+
 use File::Basename;
 
 sub BUILD {

@@ -6,6 +6,12 @@ with 'Email::MIME::Kit::Role::ManifestDesugarer';
 
 our $VERSION = '0.001';
 
+=head1 NAME
+
+Email::MIME::Kit::ManifestReader::YAML - read manifest.yaml files
+
+=cut
+
 use YAML::XS ();
 
 sub read_manifest {

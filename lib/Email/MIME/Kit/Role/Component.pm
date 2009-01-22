@@ -3,6 +3,12 @@ use Moose::Role;
 
 our $VERSION = '0.001';
 
+=head1 NAME
+
+Email::MIME::Kit::Role::Component - things that are kit components
+
+=cut
+
 has kit => (
   is  => 'ro',
   isa => 'Email::MIME::Kit',

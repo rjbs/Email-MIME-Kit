@@ -6,6 +6,12 @@ with 'Email::MIME::Kit::Role::ManifestDesugarer';
 
 our $VERSION = '0.001';
 
+=head1 NAME
+
+Email::MIME::Kit::ManifestReader::JSON - read manifest.json files
+
+=cut
+
 use JSON;
 
 sub read_manifest {
