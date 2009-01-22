@@ -2,6 +2,8 @@ package Email::MIME::Kit::KitReader::Dir;
 use Moose;
 with 'Email::MIME::Kit::Role::KitReader';
 
+our $VERSION = '0.001';
+
 use File::Spec;
 
 # cache sometimes

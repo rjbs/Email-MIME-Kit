@@ -4,6 +4,8 @@ use Moose;
 with 'Email::MIME::Kit::Role::ManifestReader';
 with 'Email::MIME::Kit::Role::ManifestDesugarer';
 
+our $VERSION = '0.001';
+
 use YAML::XS ();
 
 sub read_manifest {

@@ -1,6 +1,8 @@
 package Email::MIME::Kit::Assembler::Alts;
 use Moose;
 
+our $VERSION = '0.001';
+
 with 'Email::MIME::Kit::Role::Assembler::Simple';
 
 use Email::MIME::Creator;

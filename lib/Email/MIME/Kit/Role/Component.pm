@@ -1,6 +1,8 @@
 package Email::MIME::Kit::Role::Component;
 use Moose::Role;
 
+our $VERSION = '0.001';
+
 has kit => (
   is  => 'ro',
   isa => 'Email::MIME::Kit',

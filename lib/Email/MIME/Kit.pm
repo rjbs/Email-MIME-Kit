@@ -7,6 +7,8 @@ use Email::MIME;
 use Email::MessageID;
 use String::RewritePrefix;
 
+our $VERSION = '0.001';
+
 =head1 NAME
 
 Email::MIME::Kit - build messages from templates

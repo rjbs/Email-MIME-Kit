@@ -3,6 +3,8 @@ use Moose;
 
 with 'Email::MIME::Kit::Role::Assembler::Simple';
 
+our $VERSION = '0.001';
+
 use Email::MIME::Creator;
 
 sub assemble {

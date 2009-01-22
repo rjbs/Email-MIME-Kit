@@ -4,6 +4,8 @@ use Moose::Util::TypeConstraints;
 
 with 'Email::MIME::Kit::Role::Assembler';
 
+our $VERSION = '0.001';
+
 use File::Basename;
 
 sub BUILD {

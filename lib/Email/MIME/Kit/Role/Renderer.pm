@@ -1,6 +1,8 @@
 package Email::MIME::Kit::Role::Renderer;
 use Moose::Role;
 
+our $VERSION = '0.001';
+
 requires 'render';
 
 has kit => (

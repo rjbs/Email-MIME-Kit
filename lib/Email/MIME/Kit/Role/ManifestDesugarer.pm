@@ -1,6 +1,8 @@
 package Email::MIME::Kit::Role::ManifestDesugarer;
 use Moose::Role;
 
+our $VERSION = '0.001';
+
 my $ct_desugar;
 $ct_desugar = sub {
   my ($self, $content) = @_;
