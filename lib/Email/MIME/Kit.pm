@@ -225,7 +225,7 @@ sub _assembler_from_manifest {
       unless (grep {$_} $has_body, $has_path, $has_alts) == 1;
 
     $assembler_class = $has_body ? 'Email::MIME::Kit::Assembler::FromString'
-                     : $has_path ? 'Email::MIME::Kit::Assembler::FromFile'
+                     : $has_path ? 'Email::MIME::Kit::Assembler::FromKitEntry'
                      : $has_alts ? 'Email::MIME::Kit::Assembler::Alts'
                      :             confess "unreachable code is a mistake";
   }
