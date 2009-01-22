@@ -16,7 +16,8 @@
         "content_type": "text/html",
         "charset": "utf-8"
       },
-      "body": "<p>This is the [% crappier %] alternative HTML part.  Renderer: null</p>",
+      "header": [ { "X-Cantata": "[% friend %] canta y no llores" } ],
+      "body": "<p>This is the unrendered [% friend %] HTML part.  Renderer: null</p>",
       "renderer": null
     },
     {
