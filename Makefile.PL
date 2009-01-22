@@ -1,8 +1,8 @@
 use inc::Module::Install;
 
-name   'Email-MIME-Kit';
-author 'Ricardo SIGNES <rjbs@cpan.org>';
 all_from 'lib/Email/MIME/Kit.pm';
+
+repository 'http://github.com/rjbs/email-mime-kit';
 
 test_requires 'Test::More'          => 0;
 

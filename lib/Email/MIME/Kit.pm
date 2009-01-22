@@ -1,4 +1,5 @@
 package Email::MIME::Kit;
+require 5.008;
 use Moose;
 use Moose::Util::TypeConstraints;
 
