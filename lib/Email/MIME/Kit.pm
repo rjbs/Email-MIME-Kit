@@ -2,7 +2,6 @@ package Email::MIME::Kit;
 use Moose;
 use Moose::Util::TypeConstraints;
 
-use Data::GUID ();
 use Email::MIME;
 use Email::MessageID;
 use String::RewritePrefix;
@@ -13,70 +12,124 @@ our $VERSION = '0.001';
 
 Email::MIME::Kit - build messages from templates
 
+=head1 SYNOPSIS
+
+  use Email::MIME::Kit;
+
+  my $kit = Email::MIME::Kit->new({ source => 'mkits/sample.mkit' });
+
+  my $email = $kit->assemble({
+    account           => $new_signup,
+    verification_code => $token,
+    ... and any other template vars ...
+  });
+
+  $transport->send($email, { ... });
+
+=head2 DESCRIPTION
+
+Email::MIME::Kit is a templating system for email messages.  Instead of trying
+to be yet another templating system for chunks of text, it makes it easy to
+build complete email messages.
+
+It handles the construction of multipart messages, text and HTML alternatives,
+attachments, interpart linking, string encoding, and parameter validation.
+
+Although nearly every part of Email::MIME::Kit is a replaceable component, the
+stock configuration is probably enough for most use.  A message kit will be
+stored as a directory that might look like this:
+
+  sample.mkit/
+    manifest.json
+    body.txt
+    body.html
+    logo.jpg
+
+The manifest file tells Email::MIME::Kit how to put it all together, and might
+look something like this:
+
+  {
+    "renderer": "TT",
+    "alternatives": [
+      { "type": "text/plain", "path": "body.txt" },
+      {
+        "type": "text/html",
+        "path": "body.html",
+        "container_type": "multipart/related",
+        "attachments": [ { "type": "image/jpeg", "path": "logo.jpg" } ]
+      }
+    ]
+  }
+
+B<Please note:> the assembly of HTML documents as multipart/related bodies will
+probably be simplified with an alternate assembler in the near future.
+
+The above manifest would build a multipart alternative message.  GUI mail
+clients would see a rendered HTML document with the logo graphic visible from
+the attachment.  Text mail clients would see the plaintext.
+
+Body the HTML and text parts would be rendered using the named renderer, which
+here is Template-Toolkit.  (Note that at the time of this writing, no TT
+renderer has been written.)
+
+The message would be assembled and returned as an Email::MIME object, just as
+easily as suggested in the L</SYNOPSIS> above.
+
 =cut
 
 has source => (is => 'ro', required => 1);
 
-has manifest_reader_class => (
-  is          => 'ro',
-  default     => '=Email::MIME::Kit::ManifestReader::JSON',
-  required    => 1,
-  initializer => sub {
-    my ($self, $value, $set) = @_;
-
-    $value = String::RewritePrefix->rewrite(
-      { '=' => '', '' => 'Email::MIME::Kit::ManifestReader::' },
-      $value,
-    );
-
-    $set->($value);
-  },
-);
-
-has manifest_reader => (
-  is   => 'ro',
-  does => 'Email::MIME::Kit::Role::ManifestReader',
-  required => 1,
-  default  => sub {
-    my $class = $_[0]->manifest_reader_class;
-    eval "require $class; 1" or die $@;
-    $class->new({ kit => $_[0] });
-  },
-  handles => [ qw(read_manifest) ],
-);
-
 has manifest => (reader => 'manifest', writer => '_set_manifest');
 
-has kit_reader_class => (
-  is          => 'ro',
-  default     => '=Email::MIME::Kit::KitReader::Dir',
-  required    => 1,
-  initializer => sub {
-    my ($self, $value, $set) = @_;
-
-    $value = String::RewritePrefix->rewrite(
-      { '=' => '', '' => 'Email::MIME::Kit::KitReader::' },
-      $value,
-    );
-
-    $set->($value);
-  },
+my @auto_attrs = (
+  [ manifest_reader => ManifestReader => JSON => 'read_manifest' ],
+  [ kit_reader      => KitReader      => Dir  => 'read_kit'      ],
 );
+
+for my $attr (@auto_attrs) {
+  has $attr->[0] => (
+    is   => 'ro',
+    default     => sub { undef },
+    required    => 1,
+    initializer => sub {
+      my ($self, $value, $set) = @_;
+
+      $value ||= "=Email::MIME::Kit::$attr->[1]::$attr->[2]";
+      my $comp = $self->_build_component(
+        'Email::MIME::Kit::$attr->[1]',
+        $value,
+      );
+
+      confess "$value is not a valid $attr->[0] value"
+        unless role_type("Email::MIME::Kit::Role::$attr->[1]")->check($comp);
+
+      $set->($comp);
+    },
+    handles => [ $attr->[3] ],
+  );
+}
 
 has kit_reader => (
   is   => 'ro',
-  does => 'Email::MIME::Kit::Role::KitReader',
-  required => 1,
-  default  => sub {
-    my ($self) = @_;
-    my $class = $self->kit_reader_class;
-    eval "require $class; 1" or die $@;
-    $class->new({ kit => $self });
+  default     => sub { undef },
+  required    => 1,
+  initializer => sub {
+    my ($self, $value, $set) = @_;
+
+    $value ||= '=Email::MIME::Kit::KitReader::Dir';
+    my $component = $self->_build_component(
+      'Email::MIME::Kit::KitReader',
+      $value,
+    );
+
+    confess "$value is not a valid kit_reader value"
+      unless role_type('Email::MIME::Kit::Role::KitReader')->check($component);
+
+    $set->($component);
   },
   handles => [ qw(get_kit_entry) ],
 );
   
-
 has validator => (
   is   => 'ro',
   isa  => maybe_type(role_type('Email::MIME::Kit::Role::Validator')),
