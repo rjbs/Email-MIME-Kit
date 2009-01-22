@@ -34,15 +34,10 @@ sub _renderer_from_override {
   # 2009-01-19
   return undef unless defined $override;
 
-  my $renderer_class = String::RewritePrefix->rewrite(
-    { '=' => '', '' => 'Email::MIME::Kit::Renderer::' },
+  return $self->kit->_build_component(
+    'Email::MIME::Kit::Renderer',
     $override,
   );
-
-  eval "require $renderer_class; 1" or die $@;
-  my $renderer = $renderer_class->new({ kit => $self->kit });
-
-  return $renderer;
 }
 
 sub _pick_and_set_renderer {

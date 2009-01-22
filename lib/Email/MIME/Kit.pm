@@ -81,24 +81,33 @@ has validator => (
   lazy    => 1, # is this really needed? -- rjbs, 2009-01-20
   default => sub {
     my ($self) = @_;
-    return unless my $entry = $self->manifest->{validator};
-
-    my ($class, $arg);
-    if (ref $entry) {
-      ($class, $arg) = @$entry;
-    } else {
-      ($class, $arg) = ($entry, {});
-    }
-
-    $class = String::RewritePrefix->rewrite(
-      { '=' => '', '' => 'Email::MIME::Kit::Validator::' },
-      $class,
+    return $self->_build_component(
+      'Email::MIME::Kit::Validator',
+      $self->manifest->{validator},
     );
-
-    eval "require $class; 1" or die $@;
-    $class->new({ %$arg, kit => $self });
   },
 );
+
+sub _build_component {
+  my ($self, $base_namespace, $entry) = @_;
+
+  return unless $entry;
+
+  my ($class, $arg);
+  if (ref $entry) {
+    ($class, $arg) = @$entry;
+  } else {
+    ($class, $arg) = ($entry, {});
+  }
+
+  $class = String::RewritePrefix->rewrite(
+    { '=' => '', '' => ($base_namespace . q{::}) },
+    $class,
+  );
+
+  eval "require $class; 1" or die $@;
+  $class->new({ %$arg, kit => $self });
+}
 
 sub BUILD {
   my ($self) = @_;
@@ -111,15 +120,11 @@ sub BUILD {
 
 sub _setup_default_renderer {
   my ($self) = @_;
-  return unless my $renderer_class = $self->manifest->{renderer};
-
-  $renderer_class = String::RewritePrefix->rewrite(
-    { '=' => '', '' => 'Email::MIME::Kit::Renderer::' },
-    $renderer_class,
+  return unless my $renderer = $self->_build_component(
+    'Email::MIME::Kit::Renderer',
+    $self->manifest->{renderer},
   );
 
-  eval "require $renderer_class; 1" or die $@;
-  my $renderer = $renderer_class->new({ kit => $self->kit });
   $self->_set_default_renderer($renderer);
 }
 
