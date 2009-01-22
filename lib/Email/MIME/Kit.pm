@@ -137,7 +137,12 @@ sub assemble {
   # do so via localization. -- rjbs, 2009-01-20
   my $copied_stash = { %{ $stash || {} } };
 
-  $self->assembler->assemble($copied_stash);   
+  my $email = $self->assembler->assemble($copied_stash);   
+
+  $email->header_set('Message-ID' => $self->_generate_content_id)
+    unless $email->header_set;
+
+  return $email;
 }
 
 sub kit { $_[0] }
