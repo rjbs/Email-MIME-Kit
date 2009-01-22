@@ -9,7 +9,7 @@ test_requires 'Test::More'          => 0;
 requires 'Email::MIME::Creator' => 1.455; # content-type fix
 requires 'Email::MessageID'     => 1.400; # for the in_brackets method
 requires 'JSON' => 2;                     # the new API
-requires 'Moose' => 0.65                  # maybe_type
+requires 'Moose' => 0.65;                 # maybe_type
 requires 'String::RewritePrefix';
 
 # This is for the YAML manifest reader, which will probably go into its own
