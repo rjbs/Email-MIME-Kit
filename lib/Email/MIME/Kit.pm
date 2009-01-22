@@ -4,6 +4,7 @@ use Moose::Util::TypeConstraints;
 
 use Data::GUID ();
 use Email::MIME;
+use Email::MessageID;
 use String::RewritePrefix;
 
 =head1 NAME
@@ -193,6 +194,11 @@ has assembler => (
     return $self->_assembler_from_manifest($self->manifest);
   }
 );
+
+sub _generate_content_id {
+  Email::MessageID->new->in_brackets;
+}
+
 
 no Moose::Util::TypeConstraints;
 no Moose;

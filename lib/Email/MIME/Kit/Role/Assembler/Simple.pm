@@ -4,7 +4,6 @@ use Moose::Util::TypeConstraints;
 
 with 'Email::MIME::Kit::Role::Assembler';
 
-use Data::GUID;
 use File::Basename;
 
 sub BUILD {
@@ -222,13 +221,13 @@ sub _setup_content_ids {
         if lc $header eq 'content-id';
     }
 
-    my $guid = Data::GUID->new->as_string;
+    my $cid = $self->kit->_generate_content_id;
     push @{ $att->{header} }, {
-      'Content-Id' => $guid,
+      'Content-Id' => $cid,
       ':renderer'  => undef,
     };
 
-    $self->_cid_registry->{ $att->{path} } = $guid;
+    $self->_cid_registry->{ $att->{path} } = $cid;
   }
 }
 
