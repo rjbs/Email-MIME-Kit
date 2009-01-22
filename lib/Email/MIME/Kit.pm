@@ -69,7 +69,7 @@ The above manifest would build a multipart alternative message.  GUI mail
 clients would see a rendered HTML document with the logo graphic visible from
 the attachment.  Text mail clients would see the plaintext.
 
-Body the HTML and text parts would be rendered using the named renderer, which
+Both the HTML and text parts would be rendered using the named renderer, which
 here is Template-Toolkit.  (Note that at the time of this writing, no TT
 renderer has been written.)
 
