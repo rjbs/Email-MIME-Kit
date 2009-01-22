@@ -1,6 +1,5 @@
 package Email::MIME::Kit;
 use Moose;
-use Moose::Autobox;
 use Moose::Util::TypeConstraints;
 
 use Data::GUID ();
