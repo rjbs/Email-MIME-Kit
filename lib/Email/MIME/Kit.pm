@@ -51,6 +51,10 @@ look something like this:
 
   {
     "renderer": "TT",
+    "header": [
+      { "From": "WY Corp <noreplies@wy.example.com>" },
+      { "Subject": "Welcome aboard, [% recruit.name %]!" }
+    ],
     "alternatives": [
       { "type": "text/plain", "path": "body.txt" },
       {
