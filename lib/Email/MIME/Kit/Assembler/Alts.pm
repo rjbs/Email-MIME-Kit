@@ -1,7 +1,7 @@
 package Email::MIME::Kit::Assembler::Alts;
 use Moose;
 with 'Email::MIME::Kit::Role::Assembler::Simple';
-our $VERSION = '0.001';
+our $VERSION = '2.000';
 
 =head1 NAME
 

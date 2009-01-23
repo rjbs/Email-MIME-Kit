@@ -2,7 +2,7 @@ package Email::MIME::Kit::Assembler::FromString;
 use Moose;
 with 'Email::MIME::Kit::Role::Assembler::Simple';
 
-our $VERSION = '0.001';
+our $VERSION = '2.000';
 
 =head1 NAME
 
