@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use utf8;
 
-use Test::More tests => 2;
+use Test::More tests => 4;
 use lib 't/lib';
 
 use Email::MIME::Kit;
