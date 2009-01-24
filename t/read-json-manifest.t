@@ -7,7 +7,7 @@ use lib 't/lib';
 
 use Email::MIME::Kit;
 
-my $kit = Email::MIME::Kit->new({ source => 't/test.mkit' });
+my $kit = Email::MIME::Kit->new({ source => 't/kits/test.mkit' });
 
 my $manifest = $kit->manifest;
 ok($manifest, 'got a manifest');

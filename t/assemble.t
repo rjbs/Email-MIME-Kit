@@ -22,7 +22,7 @@ for my $args (
   pass("NOW BEGINNING TO TEST WITH FOLLOWING ARG SET: $args->[0]");
   my $kit = Email::MIME::Kit->new({
     @{ $args->[1] },
-    source     => 't/test.mkit',
+    source     => 't/kits/test.mkit',
   });
 
   my $manifest = $kit->manifest;
