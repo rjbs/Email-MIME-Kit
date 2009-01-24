@@ -12,6 +12,7 @@ Email::MIME::Kit::Role::Assembler::Simple - a badly documented assembler role
 
 =cut
 
+use Encode ();
 use File::Basename;
 
 sub BUILD {
@@ -160,6 +161,10 @@ sub _prep_header {
       $value = ${ $renderer->render(\$value, $stash) } if defined $renderer;
     }
 
+    {
+      use bytes;
+      $value = Encode::encode('MIME-Q', $value) if $value =~ /[\x80-\xff]/;
+    }
     push @done_header, $hval[0] => $value;
   }
 

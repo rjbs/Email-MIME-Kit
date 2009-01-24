@@ -22,14 +22,18 @@ sub assemble {
   # 2009-01-19
   $body .= "\x0d\x0a" unless $body =~ /[\x0d|\x0a]\z/;
 
+  my $body_ref = $self->render(\$body, $stash);
+
   my %attr = %{ $self->manifest->{attributes} || {} };
   $attr{content_type} = $attr{content_type} || 'text/plain';
+
+  $attr{encoding} ||= 'quoted-printable' if $$body_ref =~ /[\x80-\xff]/;
 
   my $email = $self->_contain_attachments({
     attributes => \%attr,
     header     => $self->manifest->{header},
     stash      => $stash,
-    body       => $body,
+    body       => $$body_ref,
     container_type => $self->manifest->{container_type},
   });
 }
