@@ -218,21 +218,7 @@ sub _assembler_from_manifest {
       $assembler_class,
     );
   } else {
-    my $has_body = defined $manifest->{body};
-    my $has_path = defined $manifest->{path};
-    my $has_alts = @{ $manifest->{alternatives} || [] };
-    my $has_att  = @{ $manifest->{attachments}  || [] };
-
-    Carp::croak("neither body, path, nor alternatives provided")
-      unless $has_body or $has_path or $has_alts;
-
-    Carp::croak("you must provide only one of body, path, or alternatives")
-      unless (grep {$_} $has_body, $has_path, $has_alts) == 1;
-
-    $assembler_class = $has_body ? 'Email::MIME::Kit::Assembler::FromString'
-                     : $has_path ? 'Email::MIME::Kit::Assembler::FromKitEntry'
-                     : $has_alts ? 'Email::MIME::Kit::Assembler::Alts'
-                     :             confess "unreachable code is a mistake";
+    $assembler_class = 'Email::MIME::Kit::Assembler::Standard';
   }
 
   eval "require $assembler_class; 1" or die $@;

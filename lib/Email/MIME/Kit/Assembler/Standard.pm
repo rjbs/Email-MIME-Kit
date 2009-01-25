@@ -1,5 +1,5 @@
-package Email::MIME::Kit::Role::Assembler::Simple;
-use Moose::Role;
+package Email::MIME::Kit::Assembler::Standard;
+use Moose;
 use Moose::Util::TypeConstraints;
 
 with 'Email::MIME::Kit::Role::Assembler';
@@ -8,10 +8,11 @@ our $VERSION = '2.000';
 
 =head1 NAME
 
-Email::MIME::Kit::Role::Assembler::Simple - a badly documented assembler role
+Email::MIME::Kit::Assembler::Standard - a badly documented assembler role
 
 =cut
 
+use Email::MIME::Creator;
 use Encode ();
 use File::Basename;
 
@@ -34,6 +35,91 @@ has renderer => (
   isa      => maybe_type(role_type('Email::MIME::Kit::Role::Renderer')),
   init_arg => undef,
 );
+
+sub assemble {
+  my ($self, $stash) = @_;
+
+  my $manifest = $self->manifest;
+
+  my $has_body = defined $manifest->{body};
+  my $has_path = defined $manifest->{path};
+  my $has_alts = @{ $manifest->{alternatives} || [] };
+  my $has_att  = @{ $manifest->{attachments}  || [] };
+
+  Carp::croak("neither body, path, nor alternatives provided")
+    unless $has_body or $has_path or $has_alts;
+
+  Carp::croak("you must provide only one of body, path, or alternatives")
+    unless (grep {$_} $has_body, $has_path, $has_alts) == 1;
+
+  my $assembly_method = $has_body ? '_assemble_from_manifest_body'
+                      : $has_path ? '_assemble_from_kit'
+                      : $has_alts ? '_assemble_mp_alt'
+                      :             confess "unreachable code is a mistake";
+
+  $self->$assembly_method($stash);
+}
+
+sub _assemble_from_string {
+  my ($self, $body, $stash) = @_;
+
+  # I really shouldn't have to do this, but I'm not going to go screw around
+  # with @#$@#$ Email::Simple/MIME just to deal with it right now. -- rjbs,
+  # 2009-01-19
+  $body .= "\x0d\x0a" unless $body =~ /[\x0d|\x0a]\z/;
+
+  my $body_ref = $self->render(\$body, $stash);
+
+  my %attr = %{ $self->manifest->{attributes} || {} };
+  $attr{content_type} = $attr{content_type} || 'text/plain';
+
+  $attr{encoding} ||= 'quoted-printable' if $$body_ref =~ /[\x80-\xff]/;
+
+  my $email = $self->_contain_attachments({
+    attributes => \%attr,
+    header     => $self->manifest->{header},
+    stash      => $stash,
+    body       => $$body_ref,
+    container_type => $self->manifest->{container_type},
+  });
+}
+
+sub _assemble_from_manifest_body {
+  my ($self, $stash) = @_;
+
+  $self->_assemble_from_string(
+    $self->manifest->{body},
+    $stash,
+  );
+}
+
+sub _assemble_from_kit {
+  my ($self, $stash) = @_;
+
+  my $body_ref = $self->kit->get_kit_entry($self->manifest->{path});
+
+  $self->_assemble_from_string($$body_ref, $stash);
+}
+
+sub _assemble_mp_alt {
+  my ($self, $stash) = @_;
+
+  my %attr = %{ $self->manifest->{attributes} || {} };
+  $attr{content_type} = $attr{content_type} || 'multipart/alternative';
+
+  if ($attr{content_type} !~ qr{\Amultipart/alternative\b}) {
+    confess "illegal content_type for mail with alts: $attr{content_type}";
+  }
+
+  my $parts = [ map { $_->assemble($stash) } $self->_alternatives ];
+
+  my $email = $self->_contain_attachments({
+    attributes => \%attr,
+    header     => $self->manifest->{header},
+    stash      => $stash,
+    parts      => $parts,
+  });
+}
 
 sub _renderer_from_override {
   my ($self, $override) = @_;
@@ -245,5 +331,5 @@ sub _setup_content_ids {
 }
 
 no Moose::Util::TypeConstraints;
-no Moose::Role;
+no Moose;
 1;
