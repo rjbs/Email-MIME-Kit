@@ -8,5 +8,5 @@ Revision history for Email-MIME-Kit
           Make it possible to change INCLUDE_PATH for Renderer::TT.
 
 0.010     2006-03-06
-          First version, released on an unsuspecting world.
+          First version, released on an unsuspecting internal network.
 
