@@ -73,7 +73,10 @@ sub _assemble_from_string {
   my %attr = %{ $self->manifest->{attributes} || {} };
   $attr{content_type} = $attr{content_type} || 'text/plain';
 
-  $attr{encoding} ||= 'quoted-printable' if $$body_ref =~ /[\x80-\xff]/;
+  if ($$body_ref =~ /[\x80-\xff]/) {
+    $attr{encoding} ||= 'quoted-printable';
+    $attr{charset}  ||= 'utf-8';
+  }
 
   my $email = $self->_contain_attachments({
     attributes => \%attr,
