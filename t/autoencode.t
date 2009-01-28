@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use utf8;
 
-use Test::More tests => 4;
+use Test::More no_plan=>; #tests => 4;
 use lib 't/lib';
 
 use Email::MIME::Kit;
@@ -23,11 +23,12 @@ my $kit = Email::MIME::Kit->new({
     how_long => '10 years',
   });
 
-  like(
-    $email->as_string,
-    qr{^Subject: Hello Jimbo Johnson$}m,
-    "plain ol' strings in the subject with 7-bit friend.name",
-  );
+   my $eol = qr{\x0d\x0a|\x0d|\x0a};
+   like(
+     $email->as_string,
+     qr{(?:$eol|\A)Subject: Hello Jimbo Johnson$eol},
+     "plain ol' strings in the subject with 7-bit friend.name",
+   );
 
   like(
     $email->body_raw,
