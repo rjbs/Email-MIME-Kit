@@ -23,12 +23,17 @@ my $kit = Email::MIME::Kit->new({
     how_long => '10 years',
   });
 
-   my $eol = qr{\x0d\x0a|\x0d|\x0a};
-   like(
-     $email->as_string,
-     qr{(?:$eol|\A)Subject: Hello Jimbo Johnson$eol},
-     "plain ol' strings in the subject with 7-bit friend.name",
-   );
+  like(
+    $email->as_string,
+    '/(?m:^Subject: Hello Jimbo Johnson$)/',
+    "plain ol' strings in the subject with 7-bit friend.name (q{//})",
+  );
+
+  like(
+    $email->as_string,
+    qr{^Subject: Hello Jimbo Johnson$}m,
+    "plain ol' strings in the subject with 7-bit friend.name (qr{})",
+  );
 
   like(
     $email->body_raw,
