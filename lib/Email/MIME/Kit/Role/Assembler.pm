@@ -3,7 +3,7 @@ use Moose::Role;
 
 with 'Email::MIME::Kit::Role::Component';
 
-our $VERSION = '2.001';
+our $VERSION = '2.002';
 
 =head1 NAME
 

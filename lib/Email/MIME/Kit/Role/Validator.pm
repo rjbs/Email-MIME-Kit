@@ -1,7 +1,7 @@
 package Email::MIME::Kit::Role::Validator;
 use Moose::Role;
 
-our $VERSION = '2.001';
+our $VERSION = '2.002';
 
 =head1 NAME
 
