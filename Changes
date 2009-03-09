@@ -1,5 +1,9 @@
 Revision history for Email-MIME-Kit
 
+2.002     2009-03-09
+          make it possible to specify an alternate kit_reader in the manifest
+          fix some bugs in core component initialization
+
 2.001     2009-01-28
           alternatives now get a default charset of utf-8 (needs more work)
           fix autoencode tests for pre-perl5-8.009's qr{}m
