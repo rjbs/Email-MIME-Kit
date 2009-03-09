@@ -164,10 +164,10 @@ sub BUILD {
   my $manifest = $self->read_manifest;
   $self->_set_manifest($manifest);
 
-  if ($manifest->{kitreader}) {
+  if ($manifest->{kit_reader}) {
     my $kit_reader = $self->_build_component(
       'Email::MIME::Kit::KitReader',
-      $manifest->{kitreader},
+      $manifest->{kit_reader},
     );
 
     $self->_set_kit_reader($kit_reader);

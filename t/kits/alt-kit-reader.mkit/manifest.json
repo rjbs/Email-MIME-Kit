@@ -1,5 +1,5 @@
 {
-  "kitreader": "=Email::MIME::Kit::ConstKit",
+  "kit_reader": "=Email::MIME::Kit::ConstKit",
   "header": [
     { "Subject": "Hello"                       },
     { "From"   : "Test Sender <test@test.com>" }
