@@ -16,7 +16,7 @@ my $bare_ct = sub { shift->content_type =~ /\A(.+?)(?:;|\z)/; $1 };
 }
 
 for my $args (
-  [ yaml => [ manifest_reader_class => 'YAML' ] ],
+  [ yaml => [ manifest_reader => 'YAML' ] ],
   [ none => [ ] ],
 ) {
   pass("NOW BEGINNING TO TEST WITH FOLLOWING ARG SET: $args->[0]");
