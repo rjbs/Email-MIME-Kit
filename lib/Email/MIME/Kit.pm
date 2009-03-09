@@ -97,12 +97,13 @@ has manifest => (reader => 'manifest', writer => '_set_manifest');
 
 my @auto_attrs = (
   [ manifest_reader => ManifestReader => JSON => 'read_manifest' ],
-  [ kit_reader      => KitReader      => Dir  => 'read_kit'      ],
+  [ kit_reader      => KitReader      => Dir  => 'get_kit_entry' ],
 );
 
 for my $attr (@auto_attrs) {
   has $attr->[0] => (
-    is   => 'ro',
+    reader      => $attr->[0],
+    writer      => "_set_$attr->[0]",
     default     => sub { undef },
     required    => 1,
     initializer => sub {
@@ -110,7 +111,7 @@ for my $attr (@auto_attrs) {
 
       $value ||= "=Email::MIME::Kit::$attr->[1]::$attr->[2]";
       my $comp = $self->_build_component(
-        'Email::MIME::Kit::$attr->[1]',
+        "Email::MIME::Kit::$attr->[1]",
         $value,
       );
 
@@ -123,27 +124,6 @@ for my $attr (@auto_attrs) {
   );
 }
 
-has kit_reader => (
-  is   => 'ro',
-  default     => sub { undef },
-  required    => 1,
-  initializer => sub {
-    my ($self, $value, $set) = @_;
-
-    $value ||= '=Email::MIME::Kit::KitReader::Dir';
-    my $component = $self->_build_component(
-      'Email::MIME::Kit::KitReader',
-      $value,
-    );
-
-    confess "$value is not a valid kit_reader value"
-      unless role_type('Email::MIME::Kit::Role::KitReader')->check($component);
-
-    $set->($component);
-  },
-  handles => [ qw(get_kit_entry) ],
-);
-  
 has validator => (
   is   => 'ro',
   isa  => maybe_type(role_type('Email::MIME::Kit::Role::Validator')),
@@ -183,6 +163,15 @@ sub BUILD {
 
   my $manifest = $self->read_manifest;
   $self->_set_manifest($manifest);
+
+  if ($manifest->{kitreader}) {
+    my $kit_reader = $self->_build_component(
+      'Email::MIME::Kit::KitReader',
+      $manifest->{kitreader},
+    );
+
+    $self->_set_kit_reader($kit_reader);
+  }
 
   $self->_setup_default_renderer;
 }
