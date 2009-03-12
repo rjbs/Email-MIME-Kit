@@ -1,7 +1,14 @@
 package Email::MIME::Kit::Renderer::TestRenderer;
 use Moose;
 with 'Email::MIME::Kit::Role::Renderer';
-# ABSTRACT: extremely simple renderer for testing purposes only
+
+=head1 NAME
+
+Email::MIME::Kit::Renderer::TestRenderer - extremely simple renderer for testing purposes only
+
+=cut
+
+our $VERSION = '2.003';
 
 =head1 WARNING
 
