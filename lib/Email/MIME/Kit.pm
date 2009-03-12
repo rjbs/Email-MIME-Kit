@@ -138,7 +138,7 @@ has validator => (
 );
 
 sub _build_component {
-  my ($self, $base_namespace, $entry) = @_;
+  my ($self, $base_namespace, $entry, $extra) = @_;
 
   return unless $entry;
 
@@ -155,7 +155,7 @@ sub _build_component {
   );
 
   eval "require $class; 1" or die $@;
-  $class->new({ %$arg, kit => $self });
+  $class->new({ %$arg, %{ $extra || {} }, kit => $self });
 }
 
 sub BUILD {
@@ -208,23 +208,14 @@ sub kit { $_[0] }
 sub _assembler_from_manifest {
   my ($self, $manifest, $parent) = @_;
 
-  my $assembler_class;
-
-  if ($assembler_class = $manifest->{assembler}) {
-    $assembler_class = String::RewritePrefix->rewrite(
-      { '=' => '', '' => 'Email::MIME::Kit::Assembler::' },
-      $assembler_class,
-    );
-  } else {
-    $assembler_class = 'Email::MIME::Kit::Assembler::Standard';
-  }
-
-  eval "require $assembler_class; 1" or die $@;
-  return $assembler_class->new({
-    kit      => $self->kit,
-    manifest => $manifest,
-    parent   => $parent,
-  });
+  $self->_build_component(
+    'Email::MIME::Kit::Assembler',
+    $manifest->{assembler} || 'Standard',
+    {
+      manifest => $manifest,
+      parent   => $parent,
+    },
+  );
 }
 
 has default_renderer => (
