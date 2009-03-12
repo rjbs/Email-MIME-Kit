@@ -1,5 +1,8 @@
 Revision history for Email-MIME-Kit
 
+2.003     2009-03-12
+          move the TestRenderer out of t/lib to let other dists rely on it
+
 2.002     2009-03-09
           make it possible to specify an alternate kit_reader in the manifest
           fix some bugs in core component initialization

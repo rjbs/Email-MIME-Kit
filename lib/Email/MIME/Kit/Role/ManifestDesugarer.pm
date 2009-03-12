@@ -1,7 +1,7 @@
 package Email::MIME::Kit::Role::ManifestDesugarer;
 use Moose::Role;
 
-our $VERSION = '2.002';
+our $VERSION = '2.003';
 
 =head1 NAME
 
