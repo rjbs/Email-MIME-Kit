@@ -156,7 +156,7 @@ sub _pick_and_set_renderer {
     return;
   }
 
-  my $renderer = $self->_renderer_from_override($self->manifest->{reader});
+  my $renderer = $self->_renderer_from_override($self->manifest->{renderer});
   $self->_set_renderer($renderer);
 }
 
