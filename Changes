@@ -1,5 +1,8 @@
 Revision history for Email-MIME-Kit
 
+2.004     2009-04-09
+          fix bug in standard assembler that prevented renderer override
+
 2.003     2009-03-12
           fix bug in subassembly creation; assembler couldn't be parameterized
           move the TestRenderer out of t/lib to let other dists rely on it
