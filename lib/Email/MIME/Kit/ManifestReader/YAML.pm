@@ -4,7 +4,7 @@ use Moose;
 with 'Email::MIME::Kit::Role::ManifestReader';
 with 'Email::MIME::Kit::Role::ManifestDesugarer';
 
-our $VERSION = '2.003';
+our $VERSION = '2.004';
 
 =head1 NAME
 

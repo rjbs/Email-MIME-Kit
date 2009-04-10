@@ -2,7 +2,7 @@ package Email::MIME::Kit::Role::KitReader;
 use Moose::Role;
 with 'Email::MIME::Kit::Role::Component';
 
-our $VERSION = '2.003';
+our $VERSION = '2.004';
 
 =head1 NAME
 

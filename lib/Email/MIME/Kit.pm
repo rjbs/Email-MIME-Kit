@@ -7,7 +7,7 @@ use Email::MIME;
 use Email::MessageID;
 use String::RewritePrefix;
 
-our $VERSION = '2.003';
+our $VERSION = '2.004';
 
 =head1 NAME
 

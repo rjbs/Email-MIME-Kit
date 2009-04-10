@@ -8,7 +8,7 @@ Email::MIME::Kit::Renderer::TestRenderer - extremely simple renderer for testing
 
 =cut
 
-our $VERSION = '2.003';
+our $VERSION = '2.004';
 
 =head1 WARNING
 

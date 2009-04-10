@@ -4,7 +4,7 @@ use Moose::Util::TypeConstraints;
 
 with 'Email::MIME::Kit::Role::Assembler';
 
-our $VERSION = '2.003';
+our $VERSION = '2.004';
 
 =head1 NAME
 
