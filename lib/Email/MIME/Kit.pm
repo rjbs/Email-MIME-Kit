@@ -239,19 +239,12 @@ This module is maintained by the Perl Email Project
 
 L<http://emailproject.perl.org/wiki/Email::MIME::Kit>
 
-=head1 AUTHORS
+=head1 AUTHOR
 
 This code was written in 2009 by Ricardo SIGNES.  It was based on a previous
 implementation by Hans Dieter Pearcey written in 2006.
 
 The development of this code was sponsored by Pobox.com.  Thanks, Pobox!
-
-=head1 COPYRIGHT AND LICENSE
-
-Copyright 2009 by Ricardo SIGNES
-
-This library is free software; you can redistribute it and/or modify it under
-the same terms as Perl itself.
 
 =cut
 
