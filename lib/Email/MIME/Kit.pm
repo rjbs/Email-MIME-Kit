@@ -31,7 +31,7 @@ before relying on this code in your production environment.
 
   $transport->send($email, { ... });
 
-=head2 DESCRIPTION
+=head1 DESCRIPTION
 
 Email::MIME::Kit is a templating system for email messages.  Instead of trying
 to be yet another templating system for chunks of text, it makes it easy to
