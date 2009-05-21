@@ -1,11 +1,6 @@
 package Email::MIME::Kit::Role::Component;
 use Moose::Role;
-
-our $VERSION = '2.004';
-
-=head1 NAME
-
-Email::MIME::Kit::Role::Component - things that are kit components
+# ABSTRACT: things that are kit components
 
 =head1 DESCRIPTION
 

@@ -1,11 +1,6 @@
 package Email::MIME::Kit::Role::ManifestDesugarer;
 use Moose::Role;
-
-our $VERSION = '2.004';
-
-=head1 NAME
-
-Email::MIME::Kit::Role::ManifestDesugarer - helper for desugaring manifests
+# ABSTRACT: helper for desugaring manifests
 
 =head1 IMPLEMENTING
 

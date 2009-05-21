@@ -1,16 +1,9 @@
 package Email::MIME::Kit::Assembler::Standard;
 use Moose;
 use Moose::Util::TypeConstraints;
+# ABSTRACT: a badly documented assembler role
 
 with 'Email::MIME::Kit::Role::Assembler';
-
-our $VERSION = '2.004';
-
-=head1 NAME
-
-Email::MIME::Kit::Assembler::Standard - a badly documented assembler role
-
-=cut
 
 use Email::MIME::Creator;
 use Encode ();

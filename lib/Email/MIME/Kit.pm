@@ -2,16 +2,11 @@ package Email::MIME::Kit;
 require 5.008;
 use Moose;
 use Moose::Util::TypeConstraints;
+# ABSTRACT: build messages from templates
 
 use Email::MIME;
 use Email::MessageID;
 use String::RewritePrefix;
-
-our $VERSION = '2.004';
-
-=head1 NAME
-
-Email::MIME::Kit - build messages from templates
 
 =head1 WARNING
 

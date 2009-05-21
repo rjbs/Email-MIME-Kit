@@ -1,14 +1,7 @@
 package Email::MIME::Kit::KitReader::Dir;
 use Moose;
 with 'Email::MIME::Kit::Role::KitReader';
-
-our $VERSION = '2.004';
-
-=head1 NAME
-
-Email::MIME::Kit::KitReader::Dir - read kit entries out of a directory
-
-=cut
+# ABSTRACT: read kit entries out of a directory
 
 use File::Spec;
 
