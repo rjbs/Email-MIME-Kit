@@ -7,6 +7,12 @@ our $VERSION = '2.004';
 
 Email::MIME::Kit::Role::Component - things that are kit components
 
+=head1 DESCRIPTION
+
+All (or most, anyway) components of an Email::MIME::Kit will perform this role.
+Its primary function is to provide a C<kit> attribute that refers back to the
+Email::MIME::Kit into which the component was installed.
+
 =cut
 
 has kit => (

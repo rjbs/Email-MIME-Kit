@@ -7,6 +7,32 @@ our $VERSION = '2.004';
 
 Email::MIME::Kit::Role::ManifestDesugarer - helper for desugaring manifests
 
+=head1 IMPLEMENTING
+
+This role also performs L<Email::MIME::Kit::Role::Component>.
+
+This is a role more likely to be consumed than implemented.  It wraps C<around>
+the C<read_manifest> method in the consuming class, and "desugars" the contents
+of the loaded manifest before returning it.
+
+At present, desugaring is what allows the C<type> attribute in attachments and
+alternatives to be given instead of a C<content_type> entry in the
+C<attributes> entry.  In other words, desugaring turns:
+
+  {
+    header => [ ... ],
+    type   => 'text/plain',
+  }
+
+Into:
+
+  {
+    header => [ ... ],
+    attributes => { content_type => 'text/plain' },
+  }
+
+More behavior may be added to the desugarer later.
+
 =cut
 
 my $ct_desugar;

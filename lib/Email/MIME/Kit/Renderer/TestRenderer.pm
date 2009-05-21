@@ -19,8 +19,8 @@ upset by something horrible soon.
 =head1 DESCRIPTION
 
 The test renderer is like a version of Template Toolkit 2 that has had a crayon
-shoved up its nose and into its brain.  It can only do a very things, but it
-does them well enough to test simple kits.
+shoved up its nose and into its brain.  It can only do a very few things, but
+it does them well enough to test simple kits.
 
 Given the following template:
 
