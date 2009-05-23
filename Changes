@@ -1,5 +1,12 @@
 Revision history for Email-MIME-Kit
 
+{{$NEXT}}
+          add missing (test) prereq Test::Deep
+
+2.091410  2009-05-20
+          documentation improvements
+          now packaged by Dist::Zilla
+
 2.004     2009-04-09
           fix bug in standard assembler that prevented renderer override
 
