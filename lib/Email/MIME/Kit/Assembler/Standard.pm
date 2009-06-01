@@ -1,7 +1,7 @@
 package Email::MIME::Kit::Assembler::Standard;
 use Moose;
 use Moose::Util::TypeConstraints;
-# ABSTRACT: a badly documented assembler role
+# ABSTRACT: the standard kit assembler
 
 with 'Email::MIME::Kit::Role::Assembler';
 
