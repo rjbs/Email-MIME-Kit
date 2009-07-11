@@ -318,7 +318,7 @@ sub _setup_content_ids {
 
     my $cid = $self->kit->_generate_content_id;
     push @{ $att->{header} }, {
-      'Content-Id' => $cid,
+      'Content-Id' => "<$cid>",
       ':renderer'  => undef,
     };
 

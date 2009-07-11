@@ -230,7 +230,7 @@ has assembler => (
 );
 
 sub _generate_content_id {
-  Email::MessageID->new->in_brackets;
+  Email::MessageID->new->as_string;
 }
 
 =head1 PERL EMAIL PROJECT

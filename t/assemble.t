@@ -96,7 +96,7 @@ for my $args (
 
       my ($cid) = $better_html->body =~ m/src='cid:(.+?)'/;
       is(
-        $cid,
+        "<$cid>",
         $jpeg->header('content-id'),
         "the html body references the jpeg's content id",
       );
