@@ -1,7 +1,9 @@
 Revision history for Email-MIME-Kit
 
-{{$NEXT}}
+2.091920  2009-07-10
           add missing (test) prereq Test::Deep
+          fix cid_for callbacks to exclude the content-id brackets (RT 47787)
+            (reported by Jason Taylor; thanks!)
 
 2.091410  2009-05-20
           documentation improvements
