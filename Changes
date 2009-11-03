@@ -1,5 +1,9 @@
 Revision history for Email-MIME-Kit
 
+
+2.093070  2009-11-03
+          improve handling of header and body encoding
+
 2.091920  2009-07-10
           add missing (test) prereq Test::Deep
           fix cid_for callbacks to exclude the content-id brackets (RT 47787)
