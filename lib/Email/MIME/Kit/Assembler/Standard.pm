@@ -243,10 +243,6 @@ sub _prep_header {
       $value = ${ $renderer->render(\$value, $stash) } if defined $renderer;
     }
 
-    {
-      use bytes;
-      $value = Encode::encode('MIME-Q', $value) if $value =~ /[\x80-\xff]/;
-    }
     push @done_header, $hval[0] => $value;
   }
 
@@ -266,7 +262,7 @@ sub _contain_attachments {
 
     return Email::MIME->create(
       attributes => $arg->{attributes},
-      header     => $header,
+      header_str => $header,
       body       => $arg->{body},
       parts      => $arg->{parts},
     );
@@ -282,7 +278,7 @@ sub _contain_attachments {
 
   my $container = Email::MIME->create(
     attributes => { content_type => ($ct || 'multipart/mixed') },
-    header     => $header,
+    header_str => $header,
     parts      => [ $email, @att_parts ],
   );
 
