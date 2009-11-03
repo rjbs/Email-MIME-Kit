@@ -67,8 +67,12 @@ sub _assemble_from_string {
   $attr{content_type} = $attr{content_type} || 'text/plain';
 
   if ($$body_ref =~ /[\x80-\xff]/) {
-    $attr{encoding} ||= 'quoted-printable';
-    $attr{charset}  ||= 'utf-8';
+    if ($attr{content_type} =~ m{^text/}) {
+      $attr{encoding} ||= 'quoted-printable';
+      $attr{charset}  ||= 'utf-8'
+    } else {
+      $attr{encoding} ||= 'base64';
+    }
   }
 
   my $email = $self->_contain_attachments({
