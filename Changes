@@ -1,5 +1,10 @@
 Revision history for Email-MIME-Kit
 
+{{$NEXT}}
+
+2.101960  2010-07-15 09:04:53 America/New_York
+          improve the chances of correctly bracketing message-ids
+          avoid re-setting already set message-ids
 
 2.093070  2009-11-03
           improve handling of header and body encoding
