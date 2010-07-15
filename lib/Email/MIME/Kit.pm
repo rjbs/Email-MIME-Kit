@@ -191,8 +191,9 @@ sub assemble {
 
   my $email = $self->assembler->assemble($copied_stash);   
 
+  my $header = $email->header('Message-ID');
   $email->header_set('Message-ID' => $self->_generate_content_id->in_brackets)
-    unless $email->header_set;
+    unless defined $header;
 
   return $email;
 }
