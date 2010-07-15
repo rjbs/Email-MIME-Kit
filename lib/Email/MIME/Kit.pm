@@ -8,15 +8,6 @@ use Email::MIME;
 use Email::MessageID;
 use String::RewritePrefix;
 
-=head1 WARNING
-
-B<Achtung!>  Even though this is marked a version 2.000, it is not a stable,
-well-proven interface.  It is a complete rewrite of a version-1 product that
-was used only internally.  You may want to wait for this warning to go away
-before relying on this code in your production environment.
-
-  -- rjbs, 2009-01-24
-
 =head1 SYNOPSIS
 
   use Email::MIME::Kit;

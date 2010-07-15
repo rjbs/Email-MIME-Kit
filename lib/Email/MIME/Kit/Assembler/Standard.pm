@@ -3,6 +3,18 @@ use Moose;
 use Moose::Util::TypeConstraints;
 # ABSTRACT: the standard kit assembler
 
+=head1 WARNING
+
+Email::MIME::Kit::Assembler::Standard works well, but is poorly decomposed,
+internally.  Its methods may change substantially in the future, so relying on
+it as a base class is a bad idea.
+
+Because I<being able to> rely on it would be so useful, its behaviors will in
+the future be more reliable or factored out into roles.  Until then, be
+careful.
+
+=cut
+
 with 'Email::MIME::Kit::Role::Assembler';
 
 use Email::MIME::Creator;
