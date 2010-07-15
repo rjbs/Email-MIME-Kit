@@ -191,7 +191,7 @@ sub assemble {
 
   my $email = $self->assembler->assemble($copied_stash);   
 
-  $email->header_set('Message-ID' => $self->_generate_content_id)
+  $email->header_set('Message-ID' => $self->_generate_content_id->in_brackets)
     unless $email->header_set;
 
   return $email;
@@ -230,7 +230,7 @@ has assembler => (
 );
 
 sub _generate_content_id {
-  Email::MessageID->new->as_string;
+  Email::MessageID->new;
 }
 
 =head1 PERL EMAIL PROJECT

@@ -318,11 +318,11 @@ sub _setup_content_ids {
 
     my $cid = $self->kit->_generate_content_id;
     push @{ $att->{header} }, {
-      'Content-Id' => "<$cid>",
+      'Content-Id' => $cid->in_brackets,
       ':renderer'  => undef,
     };
 
-    $self->_cid_registry->{ $att->{path} } = $cid;
+    $self->_cid_registry->{ $att->{path} } = $cid->as_string;
   }
 }
 
