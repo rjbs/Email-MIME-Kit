@@ -1,6 +1,8 @@
 Revision history for Email-MIME-Kit
 
 {{$NEXT}}
+
+2.102010  2010-07-20 15:00:43 America/Los_Angeles
           eliminate use of auto_deref on some private attributes
 
 2.101960  2010-07-15 09:04:53 America/New_York
