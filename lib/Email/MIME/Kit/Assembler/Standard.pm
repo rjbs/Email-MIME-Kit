@@ -123,7 +123,7 @@ sub _assemble_mp_alt {
     confess "illegal content_type for mail with alts: $attr{content_type}";
   }
 
-  my $parts = [ map { $_->assemble($stash) } $self->_alternatives ];
+  my $parts = [ map { $_->assemble($stash) } @{ $self->_alternatives } ];
 
   my $email = $self->_contain_attachments({
     attributes => \%attr,
@@ -179,7 +179,6 @@ has [ qw(_attachments _alternatives) ] => (
   isa => 'ArrayRef',
   init_arg   => undef,
   default    => sub { [] },
-  auto_deref => 1,
 );
 
 has _body => (
@@ -268,7 +267,7 @@ sub _prep_header {
 sub _contain_attachments {
   my ($self, $arg) = @_;
   
-  my @attachments = $self->_attachments;
+  my @attachments = @{ $self->_attachments };
   my $header = $self->_prep_header($arg->{header}, $arg->{stash});
 
   my $ct = $arg->{container_type};

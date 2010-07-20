@@ -1,6 +1,7 @@
 Revision history for Email-MIME-Kit
 
 {{$NEXT}}
+          eliminate use of auto_deref on some private attributes
 
 2.101960  2010-07-15 09:04:53 America/New_York
           improve the chances of correctly bracketing message-ids
