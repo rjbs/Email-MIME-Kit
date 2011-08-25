@@ -135,7 +135,7 @@ sub _assemble_mp_alt {
 
 sub _renderer_from_override {
   my ($self, $override) = @_;
-  
+
   # Allow an explicit undef to mean "no rendering is to be done." -- rjbs,
   # 2009-01-19
   return undef unless defined $override;
@@ -188,7 +188,7 @@ has _body => (
 
 sub _build_subassemblies {
   my ($self) = @_;
-  
+
   if (my $body = $self->manifest->{body}) {
     $self->_set_body($body);
   }
@@ -266,7 +266,7 @@ sub _prep_header {
 
 sub _contain_attachments {
   my ($self, $arg) = @_;
-  
+
   my @attachments = @{ $self->_attachments };
   my $header = $self->_prep_header($arg->{header}, $arg->{stash});
 
