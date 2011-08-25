@@ -2,9 +2,10 @@ use strict;
 use warnings;
 use utf8;
 
-use Test::More tests => 4;
+use Test::More tests => 6;
 use lib 't/lib';
 
+use Encode qw(decode_utf8);
 use Email::MIME::Kit;
 
 {
@@ -13,44 +14,67 @@ use Email::MIME::Kit;
   sub name { return $_[0]->{name} }
 }
 
-my $kit = Email::MIME::Kit->new({
-  source     => 't/kits/encode.mkit',
-});
-
 {
-  my $email = $kit->assemble({
-    friend   => TestFriend->new('Jimbo Johnson'),
-    how_long => '10 years',
+  my $kit = Email::MIME::Kit->new({
+    source     => 't/kits/encode.mkit',
   });
 
-  like(
-    $email->as_string,
-    qr{(?m:^Subject: Hello Jimbo Johnson$)},
-    "plain ol' strings in the subject with 7-bit friend.name (qr{})",
-  );
+  {
+    my $email = $kit->assemble({
+      friend   => TestFriend->new('Jimbo Johnson'),
+      how_long => '10 years',
+    });
 
-  like(
-    $email->body_raw,
-    qr{This goes out to Jimbo Johnson},
-    "plain text body",
-  );
+    like(
+      $email->as_string,
+      qr{(?m:^Subject: Hello Jimbo Johnson$)},
+      "plain ol' strings in the subject with 7-bit friend.name (qr{})",
+    );
+
+    like(
+      $email->body_raw,
+      qr{This goes out to Jimbo Johnson},
+      "plain text body",
+    );
+  }
+
+  {
+    my $email = $kit->assemble({
+      friend   => TestFriend->new('Jÿmbo Jºhnsøn'),
+      how_long => '10 years',
+    });
+
+    like(
+      $email->as_string,
+      qr{^Subject: =\?UTF-8\?Q\?Hello\S+\?=}m,
+      "encoded words in the subject with Unicode friend.name",
+    );
+
+    like(
+      $email->body_raw,
+      qr{This goes out to J=C3=BFmbo}, # \xCF\xBF == U+00FF, ÿ
+      "q-p encoded body",
+    );
+
+    like(
+      $email->body_str,
+      qr{This goes out to Jÿmbo},
+      "...and it reverses properly...",
+    );
+  }
 }
 
 {
-  my $email = $kit->assemble({
-    friend   => TestFriend->new('Jÿmbo Jºhnsøn'),
-    how_long => '10 years',
+  my $kit = Email::MIME::Kit->new({
+    source     => 't/kits/encode-tm.mkit',
   });
 
-  like(
-    $email->as_string,
-    qr{^Subject: =\?UTF-8\?Q\?Hello\S+\?=}m,
-    "encoded words in the subject with 8-bit friend.name",
-  );
+  my $email = $kit->assemble;
 
-  like(
-    $email->body_raw,
-    qr{This goes out to J=[0-9A-Fa-f]{2}mbo},
-    "q-p encoded body",
-  );
+  my $subj = $email->header('Subject');
+  my $str  = decode_utf8($subj);
+
+  is($str, "Thing™", "our UTF-8 manifest's subject round-tripped");
+  # sdiag $email->header('Subject');
+  # as_string;
 }

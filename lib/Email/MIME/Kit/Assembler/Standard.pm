@@ -78,8 +78,11 @@ sub _assemble_from_string {
   my %attr = %{ $self->manifest->{attributes} || {} };
   $attr{content_type} = $attr{content_type} || 'text/plain';
 
-  if ($$body_ref =~ /[\x80-\xff]/) {
+  if ($$body_ref =~ /\P{ASCII}/) {
     if ($attr{content_type} =~ m{^text/}) {
+      my $bytes = Encode::encode('utf-8', $$body_ref);
+      $$body_ref = \$bytes;
+
       $attr{encoding} ||= 'quoted-printable';
       $attr{charset}  ||= 'utf-8'
     } else {

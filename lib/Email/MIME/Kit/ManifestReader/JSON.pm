@@ -12,7 +12,7 @@ sub read_manifest {
 
   my $json_ref = $self->kit->kit_reader->get_kit_entry('manifest.json');
 
-  my $content = JSON->new->decode($$json_ref);
+  my $content = JSON->new->utf8->decode($$json_ref);
 }
 
 no Moose;
