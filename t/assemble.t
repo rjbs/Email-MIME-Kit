@@ -40,6 +40,7 @@ for my $args (
     how_long => '10 years',
   });
 
+  # diag $email->as_string;
   isa_ok($email, 'Email::MIME', 'product of kit assembly');
   is($email->header('Subject'), 'Hello Jimbo Johnson', 'subject was rendered');
 
