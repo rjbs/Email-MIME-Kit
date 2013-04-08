@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use utf8;
 
-use Test::More tests => 4;
+use Test::More tests => 6;
 use lib 't/lib';
 
 use Email::MIME::Kit;
@@ -44,8 +44,20 @@ my $kit = Email::MIME::Kit->new({
 
   like(
     $email->as_string,
-    qr{^Subject: =\?UTF-8\?Q\?Hello\S+\?=}m,
+    qr{^Subject: =\?UTF-8\?}m,
     "encoded words in the subject with 8-bit friend.name",
+  );
+
+  like(
+    $email->header_obj->header_raw('Subject'),
+    qr{\A=\?UTF-8\?}m,
+    "subject is encoded",
+  );
+
+  is(
+    $email->header_obj->header('Subject'),
+    'Hello Jÿmbo Jºhnsøn',
+    "...subject decodes properly",
   );
 
   like(
