@@ -2,6 +2,10 @@ Revision history for Email-MIME-Kit
 
 {{$NEXT}}
 
+2.102012  2013-04-08 15:29:38 America/New_York
+          make tests for header encoding less specific: the header must be
+          encoded, but we don't mind if it's B or Q
+
 2.102011  2012-07-25 10:58:12 America/New_York
           stop failing with changed crlf detection
 
