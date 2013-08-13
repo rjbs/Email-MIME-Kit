@@ -1,6 +1,9 @@
 Revision history for Email-MIME-Kit
 
 {{$NEXT}}
+          update bugtracker and repo
+
+          only call _set_attachment_info when it is present
 
 2.102012  2013-04-08 15:29:38 America/New_York
           make tests for header encoding less specific: the header must be
