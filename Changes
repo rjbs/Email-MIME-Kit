@@ -1,6 +1,8 @@
 Revision history for Email-MIME-Kit
 
 {{$NEXT}}
+
+2.102013  2013-08-12 21:32:01 America/New_York
           update bugtracker and repo
 
           only call _set_attachment_info when it is present
