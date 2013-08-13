@@ -188,14 +188,15 @@ has _body => (
 
 sub _build_subassemblies {
   my ($self) = @_;
-  
+
   if (my $body = $self->manifest->{body}) {
     $self->_set_body($body);
   }
 
   for my $attach (@{ $self->manifest->{attachments} || [] }) {
     my $assembler = $self->kit->_assembler_from_manifest($attach, $self);
-    $assembler->_set_attachment_info($attach);
+    $assembler->_set_attachment_info($attach)
+      if $assembler->can('_set_attachment_info');
     push @{ $self->_attachments }, $assembler;
   }
 
