@@ -31,6 +31,7 @@ sub BUILD {
 has parent => (
   is  => 'ro',
   isa => maybe_type(role_type('Email::MIME::Kit::Role::Assembler')),
+  weak_ref => 1,
 );
 
 has renderer => (
