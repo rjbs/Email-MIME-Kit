@@ -1,7 +1,8 @@
 package Email::MIME::Kit::Assembler::Standard;
+# ABSTRACT: the standard kit assembler
+
 use Moose;
 use Moose::Util::TypeConstraints;
-# ABSTRACT: the standard kit assembler
 
 =head1 WARNING
 

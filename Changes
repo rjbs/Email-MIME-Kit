@@ -1,6 +1,8 @@
 Revision history for Email-MIME-Kit
 
 {{$NEXT}}
+        - break a circular reference in the assembler (thanks, Charlie
+          Garrison)
 
 2.102013  2013-08-12 21:32:01 America/New_York
           update bugtracker and repo

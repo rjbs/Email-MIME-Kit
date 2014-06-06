@@ -1,8 +1,9 @@
 package Email::MIME::Kit;
+# ABSTRACT: build messages from templates
+
 require 5.008;
 use Moose;
 use Moose::Util::TypeConstraints;
-# ABSTRACT: build messages from templates
 
 use Email::MIME;
 use Email::MessageID;

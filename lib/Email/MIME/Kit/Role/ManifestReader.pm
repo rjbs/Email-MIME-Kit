@@ -1,7 +1,8 @@
 package Email::MIME::Kit::Role::ManifestReader;
+# ABSTRACT: things that read kit manifests
+
 use Moose::Role;
 with 'Email::MIME::Kit::Role::Component';
-# ABSTRACT: things that read kit manifests
 
 =head1 IMPLEMENTING
 

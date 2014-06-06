@@ -1,7 +1,8 @@
 package Email::MIME::Kit::Renderer::TestRenderer;
+# ABSTRACT:  extremely simple renderer for testing purposes only
+
 use Moose;
 with 'Email::MIME::Kit::Role::Renderer';
-# ABSTRACT:  extremely simple renderer for testing purposes only
 
 =head1 WARNING
 

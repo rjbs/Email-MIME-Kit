@@ -1,6 +1,7 @@
 package Email::MIME::Kit::ManifestReader::JSON;
-use Moose;
 # ABSTRACT: read manifest.json files
+
+use Moose;
 
 with 'Email::MIME::Kit::Role::ManifestReader';
 with 'Email::MIME::Kit::Role::ManifestDesugarer';
