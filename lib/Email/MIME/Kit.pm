@@ -230,7 +230,7 @@ sub _generate_content_id {
 
 This module is maintained by the Perl Email Project
 
-L<http://emailproject.perl.org/wiki/Email::MIME::Kit>
+L<http://emailproject.perl.org/>
 
 =head1 AUTHOR
 
