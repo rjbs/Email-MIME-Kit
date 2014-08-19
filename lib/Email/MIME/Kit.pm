@@ -226,12 +226,6 @@ sub _generate_content_id {
   Email::MessageID->new;
 }
 
-=head1 PERL EMAIL PROJECT
-
-This module is maintained by the Perl Email Project
-
-L<http://emailproject.perl.org/>
-
 =head1 AUTHOR
 
 This code was written in 2009 by Ricardo SIGNES.  It was based on a previous
