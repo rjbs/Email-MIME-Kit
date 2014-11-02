@@ -1,6 +1,8 @@
 Revision history for Email-MIME-Kit
 
 {{$NEXT}}
+        - read kit entries in binary mode for the sake of Win32 (thanks,
+          Octavian Rasnita!)
 
 2.102014  2014-06-06 08:24:52-04:00 America/New_York
         - break a circular reference in the assembler (thanks, Charlie

@@ -12,7 +12,8 @@ sub get_kit_entry {
 
   my $fullpath = File::Spec->catfile($self->kit->source, $path);
 
-  open my $fh, '<', $fullpath or die "can't open $fullpath for reading: $!";
+  open my $fh, '<:raw', $fullpath
+    or die "can't open $fullpath for reading: $!";
   my $content = do { local $/; <$fh> };
 
   return \$content;
