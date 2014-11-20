@@ -82,8 +82,9 @@ has source => (is => 'ro', required => 1);
 has manifest => (reader => 'manifest', writer => '_set_manifest');
 
 my @auto_attrs = (
-  [ manifest_reader => ManifestReader => JSON => 'read_manifest' ],
-  [ kit_reader      => KitReader      => Dir  => 'get_kit_entry' ],
+  [ manifest_reader => ManifestReader => JSON => [ 'read_manifest' ] ],
+  [ kit_reader      => KitReader      => Dir  => [ 'get_kit_entry',
+                                                   'get_decoded_kit_entry' ] ],
 );
 
 for my $attr (@auto_attrs) {
@@ -106,7 +107,7 @@ for my $attr (@auto_attrs) {
 
       $set->($comp);
     },
-    handles => [ $attr->[3] ],
+    handles => $attr->[3],
   );
 }
 
