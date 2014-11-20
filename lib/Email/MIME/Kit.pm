@@ -62,8 +62,8 @@ look something like this:
     ]
   }
 
-B<Please note:> the assembly of HTML documents as multipart/related bodies will
-probably be simplified with an alternate assembler in the near future.
+B<Please note:> the assembly of HTML documents as multipart/related bodies may
+be simplified with an alternate assembler in the future.
 
 The above manifest would build a multipart alternative message.  GUI mail
 clients would see a rendered HTML document with the logo graphic visible from
