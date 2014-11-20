@@ -62,7 +62,7 @@ my $kit = Email::MIME::Kit->new({
 
   like(
     $email->body_raw,
-    qr{This goes out to J=[0-9A-Fa-f]{2}mbo},
+    qr{This goes out to J(?:=[0-9A-Fa-f]{2}){2}mbo},
     "q-p encoded body",
   );
 }
