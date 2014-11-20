@@ -1,6 +1,10 @@
 Revision history for Email-MIME-Kit
 
 {{$NEXT}}
+          [BREAKING CHANGES]
+        - content read from disk (templates, for example) is now decoded
+          as UTF-8 if and only if the content type for which it is being used
+          is text/*
 
 2.102015  2014-11-02 08:59:04-05:00 America/New_York
         - read kit entries in binary mode for the sake of Win32 (thanks,
