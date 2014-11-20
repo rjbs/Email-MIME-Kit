@@ -276,7 +276,7 @@ sub _contain_attachments {
     $body_type = 'body_str';
 
     $attr{encoding} ||= 'quoted-printable';
-    $attr{charset}  ||= 'utf-8'
+    $attr{charset}  ||= 'UTF-8'
   } elsif (($arg->{body} || '') =~ /\P{ASCII}/) {
     $attr{encoding} ||= 'base64';
   }
