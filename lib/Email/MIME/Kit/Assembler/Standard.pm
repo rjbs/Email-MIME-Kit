@@ -75,19 +75,10 @@ sub _assemble_from_string {
   # 2009-01-19
   $body .= "\x0d\x0a" unless $body =~ /[\x0d|\x0a]\z/;
 
-  my $body_ref = $self->render(\$body, $stash);
+  my $body_ref  = $self->render(\$body, $stash);
 
   my %attr = %{ $self->manifest->{attributes} || {} };
-  $attr{content_type} = $attr{content_type} || 'text/plain';
-
-  if ($$body_ref =~ /\P{ASCII}/) {
-    if ($attr{content_type} =~ m{^text/}) {
-      $attr{encoding} ||= 'quoted-printable';
-      $attr{charset}  ||= 'utf-8'
-    } else {
-      $attr{encoding} ||= 'base64';
-    }
-  }
+  $attr{content_type} ||= 'text/plain';
 
   my $email = $self->_contain_attachments({
     attributes => \%attr,
@@ -110,7 +101,10 @@ sub _assemble_from_manifest_body {
 sub _assemble_from_kit {
   my ($self, $stash) = @_;
 
-  my $body_ref = $self->kit->get_kit_entry($self->manifest->{path});
+  my $type   = $self->manifest->{attributes}{content_type} || 'text/plain';
+  my $method = $type =~ m{^text/} ? 'get_decoded_kit_entry' : 'get_kit_entry';
+
+  my $body_ref = $self->kit->$method($self->manifest->{path});
 
   $self->_assemble_from_string($$body_ref, $stash);
 }
@@ -275,20 +269,32 @@ sub _contain_attachments {
 
   my $ct = $arg->{container_type};
 
+  my %attr = %{ $arg->{attributes} };
+  my $body_type = 'body';
+
+  if ($attr{content_type} =~ m{^text/}) {
+    $body_type = 'body_str';
+
+    $attr{encoding} ||= 'quoted-printable';
+    $attr{charset}  ||= 'utf-8'
+  } elsif (($arg->{body} || '') =~ /\P{ASCII}/) {
+    $attr{encoding} ||= 'base64';
+  }
+
   unless (@attachments) {
     confess "container_type given for single-part assembly" if $ct;
 
     return Email::MIME->create(
-      attributes => $arg->{attributes},
+      attributes => \%attr,
       header_str => $header,
-      body       => $arg->{body},
+      $body_type => $arg->{body},
       parts      => $arg->{parts},
     );
   }
 
   my $email = Email::MIME->create(
-    attributes => $arg->{attributes},
-    body       => $arg->{body},
+    attributes => \%attr,
+    $body_type => $arg->{body},
     parts      => $arg->{parts},
   );
 
