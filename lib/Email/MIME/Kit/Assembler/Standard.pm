@@ -70,15 +70,17 @@ sub assemble {
 sub _assemble_from_string {
   my ($self, $body, $stash) = @_;
 
-  # I really shouldn't have to do this, but I'm not going to go screw around
-  # with @#$@#$ Email::Simple/MIME just to deal with it right now. -- rjbs,
-  # 2009-01-19
-  $body .= "\x0d\x0a" unless $body =~ /[\x0d|\x0a]\z/;
-
-  my $body_ref  = $self->render(\$body, $stash);
-
   my %attr = %{ $self->manifest->{attributes} || {} };
   $attr{content_type} ||= 'text/plain';
+
+  if ($attr{content_type} =~ m{^text/}) {
+    # I really shouldn't have to do this, but I'm not going to go screw around
+    # with @#$@#$ Email::Simple/MIME just to deal with it right now. -- rjbs,
+    # 2009-01-19
+    $body .= "\x0d\x0a" unless $body =~ /[\x0d|\x0a]\z/;
+  }
+
+  my $body_ref  = $self->render(\$body, $stash);
 
   my $email = $self->_contain_attachments({
     attributes => \%attr,

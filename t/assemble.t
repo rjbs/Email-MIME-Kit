@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 2 * 23;
+use Test::More tests => 2 * 25;
 use lib 't/lib';
 
 use Email::MIME::Kit;
@@ -100,6 +100,16 @@ for my $args (
         "<$cid>",
         $jpeg->header('content-id'),
         "the html body references the jpeg's content id",
+      );
+
+      open my $jpeg_fh, '<:raw', 't/kits/test.mkit/logo.jpg'
+        or die "can't read logo.jpg: $!";
+      my $jpeg_bytes = do { local $/; <$jpeg_fh> };
+      ok($jpeg->body eq $jpeg_bytes, "jpeg is not corrupted by attaching");
+      is(
+        length($jpeg->body),
+        length($jpeg_bytes),
+        "same length of jpegs",
       );
     }
   }
