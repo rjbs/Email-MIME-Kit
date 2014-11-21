@@ -75,6 +75,39 @@ here is Template-Toolkit.
 The message would be assembled and returned as an Email::MIME object, just as
 easily as suggested in the L</SYNOPSIS> above.
 
+=head1 ENCODING ISSUES
+
+In general, "it should all just work" ... starting in version v3.
+
+Email::MIME::Kit assumes that any file read for the purpose of becoming a
+C<text/*>-type part is encoded in UTF-8.  It will decode them and work with
+their contents as text strings.  Renderers will be passed text strings to
+render, and so on.  This, further, means that strings passed to the C<assemble>
+method for use in rendering should also be text strings.
+
+In older versions of Email::MIME::Kit, files read from disk were read in raw
+mode and then handled as octet strings.  Meanwhile, the manifest's contents
+(and, thus, any templates stored as strings in the manifest) were decoded into
+text strings.  This could lead to serious problems.  For example: the
+F<manifest.json> file might contain:
+
+  "header": [
+    { "Subject": "Message for [% customer_name %]" },
+    ...
+  ]
+
+...while a template on disk might contain:
+
+  Dear [% customer_name %],
+  ...
+
+If the customer's name isn't ASCII, there was no right way to pass it in.  The
+template on disk would expect UTF-8, but the template in the manifest would
+expect Unicode text.  Users prior to v3 may have taken strange steps to get
+around this problem, understanding that some templates were treated differently
+than others.  This means that some review of kits is in order when upgrading
+from earlier versions of Email::MIME::Kit.
+
 =cut
 
 has source => (is => 'ro', required => 1);
