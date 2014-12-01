@@ -2,7 +2,7 @@ Revision history for Email-MIME-Kit
 
 {{$NEXT}}
 
-3.000000  2014-11-20 20:49:33-05:00 America/New_York (TRIAL RELEASE)
+3.000001  2014-12-01 14:10:12-05:00 America/New_York
           [BREAKING CHANGES]
         - content read from disk (templates, for example) is now decoded
           as UTF-8 if and only if the content type for which it is being used
