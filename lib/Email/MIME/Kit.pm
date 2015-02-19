@@ -62,8 +62,8 @@ look something like this:
     ]
   }
 
-B<Please note:> the assembly of HTML documents as multipart/related bodies will
-probably be simplified with an alternate assembler in the near future.
+B<Please note:> the assembly of HTML documents as multipart/related bodies may
+be simplified with an alternate assembler in the future.
 
 The above manifest would build a multipart alternative message.  GUI mail
 clients would see a rendered HTML document with the logo graphic visible from
@@ -75,6 +75,39 @@ here is Template-Toolkit.
 The message would be assembled and returned as an Email::MIME object, just as
 easily as suggested in the L</SYNOPSIS> above.
 
+=head1 ENCODING ISSUES
+
+In general, "it should all just work" ... starting in version v3.
+
+Email::MIME::Kit assumes that any file read for the purpose of becoming a
+C<text/*>-type part is encoded in UTF-8.  It will decode them and work with
+their contents as text strings.  Renderers will be passed text strings to
+render, and so on.  This, further, means that strings passed to the C<assemble>
+method for use in rendering should also be text strings.
+
+In older versions of Email::MIME::Kit, files read from disk were read in raw
+mode and then handled as octet strings.  Meanwhile, the manifest's contents
+(and, thus, any templates stored as strings in the manifest) were decoded into
+text strings.  This could lead to serious problems.  For example: the
+F<manifest.json> file might contain:
+
+  "header": [
+    { "Subject": "Message for [% customer_name %]" },
+    ...
+  ]
+
+...while a template on disk might contain:
+
+  Dear [% customer_name %],
+  ...
+
+If the customer's name isn't ASCII, there was no right way to pass it in.  The
+template on disk would expect UTF-8, but the template in the manifest would
+expect Unicode text.  Users prior to v3 may have taken strange steps to get
+around this problem, understanding that some templates were treated differently
+than others.  This means that some review of kits is in order when upgrading
+from earlier versions of Email::MIME::Kit.
+
 =cut
 
 has source => (is => 'ro', required => 1);
@@ -82,8 +115,9 @@ has source => (is => 'ro', required => 1);
 has manifest => (reader => 'manifest', writer => '_set_manifest');
 
 my @auto_attrs = (
-  [ manifest_reader => ManifestReader => JSON => 'read_manifest' ],
-  [ kit_reader      => KitReader      => Dir  => 'get_kit_entry' ],
+  [ manifest_reader => ManifestReader => JSON => [ 'read_manifest' ] ],
+  [ kit_reader      => KitReader      => Dir  => [ 'get_kit_entry',
+                                                   'get_decoded_kit_entry' ] ],
 );
 
 for my $attr (@auto_attrs) {
@@ -106,7 +140,7 @@ for my $attr (@auto_attrs) {
 
       $set->($comp);
     },
-    handles => [ $attr->[3] ],
+    handles => $attr->[3],
   );
 }
 
@@ -237,4 +271,5 @@ The development of this code was sponsored by Pobox.com.  Thanks, Pobox!
 
 no Moose::Util::TypeConstraints;
 no Moose;
+__PACKAGE__->meta->make_immutable;
 1;
