@@ -350,4 +350,5 @@ sub _setup_content_ids {
 
 no Moose::Util::TypeConstraints;
 no Moose;
+__PACKAGE__->meta->make_immutable;
 1;

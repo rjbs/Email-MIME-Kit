@@ -271,4 +271,5 @@ The development of this code was sponsored by Pobox.com.  Thanks, Pobox!
 
 no Moose::Util::TypeConstraints;
 no Moose;
+__PACKAGE__->meta->make_immutable;
 1;

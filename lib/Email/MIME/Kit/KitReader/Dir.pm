@@ -19,4 +19,6 @@ sub get_kit_entry {
   return \$content;
 }
 
+no Moose;
+__PACKAGE__->meta->make_immutable;
 1;
