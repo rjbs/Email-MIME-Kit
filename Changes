@@ -2,6 +2,9 @@ Revision history for Email-MIME-Kit
 
 {{$NEXT}}
 
+3.000002  2015-02-19 11:02:14-05:00 America/New_York
+        - immutabilize more classes
+
 3.000001  2014-12-01 14:10:12-05:00 America/New_York
           [BREAKING CHANGES]
         - content read from disk (templates, for example) is now decoded
