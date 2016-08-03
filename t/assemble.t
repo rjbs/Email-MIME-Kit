@@ -20,7 +20,7 @@ for my $args (
   [ none => [ ] ],
 ) {
   subtest "building with $args->[0] arg set" => sub {
-    plan tests => 24;
+    plan tests => 25;
 
     my $kit = Email::MIME::Kit->new({
       @{ $args->[1] },
@@ -50,6 +50,18 @@ for my $args (
       (defined scalar $email->header('Message-Id')),
       "we have a message-id on the top level",
     );
+
+    subtest "non-ASCII headers from manifest" => sub {
+      for (qw(Band-1 Band-2)) {
+        is($email->header($_), "Queensr\xFFche", "$_ header decodes");
+      }
+
+      is(
+        $email->header_raw('Band-1'),
+        $email->header_raw('Band-2'),
+        "two forms of non-ASCII in JSON treated equivalently",
+      );
+    };
 
     like(
       $email->header('X-Test'),

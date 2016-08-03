@@ -1,7 +1,7 @@
 ---
 validator:
   - Simplest
-  - required_fields: 
+  - required_fields:
     - friend
 renderer: TestRenderer
 header:
@@ -9,6 +9,8 @@ header:
 - From:    "Test Sender <test@test.com>"
 - X-Test:  "This is an unrendered [% friend %] test."
   ":renderer": ~
+- Band-1: "Queensrÿche"
+- Band-2: "Queensr\u00FFche"
 alternatives:
 - type: text/plain
   body: "We don't support tests."

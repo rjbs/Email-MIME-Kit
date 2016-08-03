@@ -1,6 +1,11 @@
 Revision history for Email-MIME-Kit
 
 {{$NEXT}}
+        - manifest.json is now properly decoded while being read, so
+          UTF-8 strings in the manifest.json are treated the same way as
+          \u.... sequences.  If you had been doubly-UTF-8-encoding your
+          manifest.json to work around this bug, your code is now broken
+          because my code is now fixed.
 
 3.000002  2015-02-19 11:02:14-05:00 America/New_York
         - immutabilize more classes

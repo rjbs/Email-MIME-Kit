@@ -13,9 +13,7 @@ sub read_manifest {
 
   my $json_ref = $self->kit->kit_reader->get_kit_entry('manifest.json');
 
-  # We do not touch ->utf8 because we're reading the octets, and not decoding
-  # them. -- rjbs, 2014-11-20
-  my $content = JSON->new->decode($$json_ref);
+  my $content = JSON->new->utf8->decode($$json_ref);
 }
 
 no Moose;

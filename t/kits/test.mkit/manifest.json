@@ -4,7 +4,9 @@
   "header": [
     { "Subject": "Hello [% friend.name() %]"     },
     { "From":    "Test Sender <test@test.com>" },
-    { "X-Test":  "This is an unrendered [% friend %] test.", ":renderer": null  }
+    { "X-Test":  "This is an unrendered [% friend %] test.", ":renderer": null  },
+    { "Band-1": "Queensrÿche" },
+    { "Band-2": "Queensr\u00FFche" }
   ],
   "alternatives": [
     {
