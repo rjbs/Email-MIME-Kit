@@ -6,7 +6,7 @@ use Moose;
 with 'Email::MIME::Kit::Role::ManifestReader';
 with 'Email::MIME::Kit::Role::ManifestDesugarer';
 
-use JSON;
+use JSON 2;
 
 sub read_manifest {
   my ($self) = @_;
