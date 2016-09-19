@@ -1,6 +1,8 @@
 Revision history for Email-MIME-Kit
 
 {{$NEXT}}
+        - set up kit_reader and manifest_reader with a helper attribute instead
+          of the weird and rarely-seen Moose "initializer" system
 
 3.000004  2016-08-03 22:48:27-04:00 America/New_York
         - require a newer Email::MIME so we can rely on the header_raw method

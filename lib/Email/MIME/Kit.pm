@@ -7,6 +7,7 @@ use Moose::Util::TypeConstraints;
 
 use Email::MIME 1.930; # header_raw
 use Email::MessageID 1.400; # for in_brackets method
+use Module::Runtime ();
 use String::RewritePrefix;
 
 =head1 SYNOPSIS
@@ -120,27 +121,33 @@ my @auto_attrs = (
                                                    'get_decoded_kit_entry' ] ],
 );
 
-for my $attr (@auto_attrs) {
-  has $attr->[0] => (
-    reader      => $attr->[0],
-    writer      => "_set_$attr->[0]",
-    default     => sub { undef },
-    required    => 1,
-    initializer => sub {
-      my ($self, $value, $set) = @_;
+for my $tuple (@auto_attrs) {
+  my ($attr, $role, $default, $handles) = @$tuple;
 
-      $value ||= "=Email::MIME::Kit::$attr->[1]::$attr->[2]";
-      my $comp = $self->_build_component(
-        "Email::MIME::Kit::$attr->[1]",
-        $value,
-      );
+  my $seed = "_${attr}_seed";
+  my $base_ns  = "Email::MIME::Kit::$role";
+  my $role_pkg = "Email::MIME::Kit::Role::$role";
 
-      confess "$value is not a valid $attr->[0] value"
-        unless role_type("Email::MIME::Kit::Role::$attr->[1]")->check($comp);
+  has $seed => (
+    is => 'ro',
+    init_arg => $attr,
+    default  => "=Email::MIME::Kit::${role}::$default",
+  );
 
-      $set->($comp);
+  has $attr => (
+    reader      => $attr,
+    writer      => "_set_$attr",
+    isa         => role_type($role_pkg),
+    init_arg    => undef,
+    lazy        => 1,
+    default     => sub {
+      my ($self) = @_;
+
+      my $comp = $self->_build_component($base_ns, $self->$seed);
+
+      return $comp;
     },
-    handles => $attr->[3],
+    handles => $handles,
   );
 }
 
@@ -174,7 +181,7 @@ sub _build_component {
     $class,
   );
 
-  eval "require $class; 1" or die $@;
+  Module::Runtime::require_module($class);
   $class->new({ %$arg, %{ $extra || {} }, kit => $self });
 }
 
