@@ -63,6 +63,10 @@ look something like this:
     ]
   }
 
+B<Inline images> may be accessed with the function C<cid_for>, for example to include the above logo.jpg:
+
+    <img style="margin: 0 auto" src="cid:[% cid_for("logo.jpg") %]">
+
 B<Please note:> the assembly of HTML documents as multipart/related bodies may
 be simplified with an alternate assembler in the future.
 
