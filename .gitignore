@@ -1,3 +1,6 @@
 .gitnxtver_cache
 .build
 Email-MIME-Kit-*
+cpanfile
+cpanfile.snapshot
+local/*
