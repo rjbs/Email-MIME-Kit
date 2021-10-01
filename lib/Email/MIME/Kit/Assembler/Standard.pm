@@ -103,10 +103,11 @@ sub _assemble_from_manifest_body {
 sub _assemble_from_kit {
   my ($self, $stash) = @_;
 
-  my $type   = $self->manifest->{attributes}{content_type} || 'text/plain';
-  my $method = $type =~ m{^text/} ? 'get_decoded_kit_entry' : 'get_kit_entry';
+  my %manifest = $self->_prep_attr( $self->manifest, $stash );
+  my $type     = $manifest{attributes}{content_type} || 'text/plain';
+  my $method   = $type =~ m{^text/} ? 'get_decoded_kit_entry' : 'get_kit_entry';
 
-  my $body_ref = $self->kit->$method($self->manifest->{path});
+  my $body_ref = $self->kit->$method($manifest{path});
 
   $self->_assemble_from_string($$body_ref, $stash);
 }
@@ -263,6 +264,25 @@ sub _prep_header {
   return \@done_header;
 }
 
+sub _prep_attr {
+  my ($self, $attr, $stash) = @_;
+  my %attr = %$attr;
+
+  my $renderer = exists $attr{':renderer'}
+               ? $self->_renderer_from_override($attr{':renderer'})
+               : $self->renderer;
+
+  for my $key ( keys %$attr ) {
+    next if  ( ref( $attr{$key} ) );
+    if ( defined $renderer ) {
+      my $val     = $renderer->render(\$attr{$key}, $stash) if defined $renderer;
+      $attr{$key} = $$val;
+    }
+  }
+
+  return %attr;
+}
+
 sub _contain_attachments {
   my ($self, $arg) = @_;
 
@@ -271,7 +291,7 @@ sub _contain_attachments {
 
   my $ct = $arg->{container_type};
 
-  my %attr = %{ $arg->{attributes} };
+  my %attr = $self->_prep_attr($arg->{attributes}, $arg->{stash});
   my $body_type = 'body';
 
   if ($attr{content_type} =~ m{^text/}) {
