@@ -1,7 +1,7 @@
 package Email::MIME::Kit;
 # ABSTRACT: build messages from templates
 
-require 5.008;
+use v5.20.0;
 use Moose 0.65; # maybe_type
 use Moose::Util::TypeConstraints;
 
@@ -226,7 +226,7 @@ sub assemble {
   # do so via localization. -- rjbs, 2009-01-20
   my $copied_stash = { %{ $stash || {} } };
 
-  my $email = $self->assembler->assemble($copied_stash);   
+  my $email = $self->assembler->assemble($copied_stash);
 
   my $header = $email->header('Message-ID');
   $email->header_set('Message-ID' => $self->_generate_content_id->in_brackets)

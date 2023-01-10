@@ -1,6 +1,7 @@
 package Email::MIME::Kit::Role::Renderer;
 # ABSTRACT: things that render templates into contents
 
+use v5.20.0;
 use Moose::Role;
 with 'Email::MIME::Kit::Role::Component';
 

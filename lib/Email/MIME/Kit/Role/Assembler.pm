@@ -1,6 +1,7 @@
 package Email::MIME::Kit::Role::Assembler;
 # ABSTRACT: things that assemble messages (or parts)
 
+use v5.20.0;
 use Moose::Role;
 with 'Email::MIME::Kit::Role::Component';
 

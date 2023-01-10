@@ -1,6 +1,7 @@
 package Email::MIME::Kit::Role::Component;
 # ABSTRACT: things that are kit components
 
+use v5.20.0;
 use Moose::Role;
 
 =head1 DESCRIPTION

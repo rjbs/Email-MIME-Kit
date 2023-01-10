@@ -1,6 +1,7 @@
 package Email::MIME::Kit::Assembler::Standard;
 # ABSTRACT: the standard kit assembler
 
+use v5.20.0;
 use Moose;
 use Moose::Util::TypeConstraints;
 
