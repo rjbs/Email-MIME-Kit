@@ -1,6 +1,8 @@
 Revision history for Email-MIME-Kit
 
 {{$NEXT}}
+        - update packaging and metadata
+        - minimum required Perl is now v5.12
 
 3.000006  2018-03-10 16:45:07-05:00 America/New_York
         - add some docs on cid_for (thanks, Kaitlyn Parkhurst!)
