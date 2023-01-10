@@ -4,8 +4,8 @@ package Email::MIME::Kit::ManifestReader::JSON;
 use v5.20.0;
 use Moose;
 
-with 'Email::MIME::Kit::Role::ManifestReader';
-with 'Email::MIME::Kit::Role::ManifestDesugarer';
+with 'Email::MIME::Kit::Role::ManifestReader',
+     'Email::MIME::Kit::Role::ManifestDesugarer';
 
 use JSON 2;
 
