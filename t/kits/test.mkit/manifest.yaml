@@ -31,7 +31,7 @@ alternatives:
   - type: image/jpeg
     path: logo.jpg
 attachments:
-- type: application/pdf
-  path: bogus-report.pdf
+- type: "[% rpt_type %]"
+  path: "[% rpt_path %]"
   attributes:
-    filename: report.pdf
+    filename: "[% rpt_name %]"

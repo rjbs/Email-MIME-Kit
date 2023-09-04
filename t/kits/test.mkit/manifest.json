@@ -37,9 +37,9 @@
   ],
   "attachments": [
     {
-      "type": "application/pdf",
-      "path": "bogus-report.pdf",
-      "attributes": { "filename": "report.pdf" }
+      "type": "[% rpt_type %]",
+      "path": "[% rpt_path %]",
+      "attributes": { "filename": "[% rpt_name %]" }
     }
   ]
 }
