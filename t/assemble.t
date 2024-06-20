@@ -20,7 +20,7 @@ for my $args (
   [ none => [ ] ],
 ) {
   subtest "building with $args->[0] arg set" => sub {
-    plan tests => 25;
+    plan tests => 26;
 
     my $kit = Email::MIME::Kit->new({
       @{ $args->[1] },
@@ -37,9 +37,14 @@ for my $args (
       like($err, qr/friend/, "specifically, the 'friend' param");
     }
 
+    my $rpt_file_name = 'reportz.pdf';
+
     my $email = $kit->assemble({
       friend   => TestFriend->new('Jimbo Johnson'),
       how_long => '10 years',
+      rpt_path => 'bogus-report.pdf',
+      rpt_type => 'application/pdf',
+      rpt_name => $rpt_file_name,
     });
 
     # diag $email->as_string;
@@ -74,6 +79,8 @@ for my $args (
     is(@top_rest, 0, "we got exactly 2 top-level parts");
     is($mp_alt->$bare_ct, 'multipart/alternative', 'first subpart is mp/a');
     is($pdf->$bare_ct, 'application/pdf', '2nd subpart is application/pdf');
+
+    is($pdf->filename, $rpt_file_name, "pdf filename 'reportz.pdf' set by token");
 
     {
       my ($txt, $html, $mp_rel, @alt_rest) = $mp_alt->subparts;
